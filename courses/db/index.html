@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数据库运维与管理 - 跟着做·学会 DBA 核心技能</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -35,11 +34,9 @@
             font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-dark);
             color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
+            line-height: 1.7;
         }
 
-        /* 背景动画 */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -48,7 +45,6 @@
             height: 100%;
             pointer-events: none;
             z-index: -1;
-            overflow: hidden;
         }
 
         .bg-animation::before {
@@ -62,20 +58,9 @@
             animation: float 20s ease-in-out infinite;
         }
 
-        .bg-animation::after {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-            bottom: -150px;
-            left: -150px;
-            animation: float 25s ease-in-out infinite reverse;
-        }
-
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, 30px) scale(1.1); }
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
         }
 
         /* 导航栏 */
@@ -85,11 +70,10 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             padding: 0 2rem;
-            transition: all 0.3s ease;
         }
 
         .nav-content {
@@ -124,7 +108,6 @@
             background: var(--gradient-1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .nav-links {
@@ -138,7 +121,7 @@
             text-decoration: none;
             border-radius: 8px;
             font-size: 0.9rem;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
         .nav-link:hover {
@@ -151,9 +134,9 @@
             color: white;
         }
 
-        /* Hero区域 */
+        /* Hero */
         .hero {
-            min-height: 100vh;
+            min-height: 80vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -176,7 +159,6 @@
             font-size: 0.85rem;
             color: var(--primary);
             margin-bottom: 1.5rem;
-            animation: fadeInUp 0.6s ease;
         }
 
         .hero h1 {
@@ -186,23 +168,19 @@
             background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 0.6s ease 0.1s both;
         }
 
         .hero-subtitle {
             font-size: 1.25rem;
             color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            animation: fadeInUp 0.6s ease 0.2s both;
+            margin-bottom: 2rem;
         }
 
         .hero-stats {
             display: flex;
             justify-content: center;
             gap: 3rem;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.6s ease 0.3s both;
+            margin-bottom: 2.5rem;
         }
 
         .stat-item {
@@ -215,21 +193,17 @@
             background: var(--gradient-2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
         }
 
         .stat-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-top: 0.5rem;
         }
 
         .hero-actions {
             display: flex;
             gap: 1rem;
             justify-content: center;
-            animation: fadeInUp 0.6s ease 0.4s both;
         }
 
         .btn {
@@ -241,7 +215,7 @@
             font-size: 1rem;
             font-weight: 500;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             cursor: pointer;
             border: none;
         }
@@ -268,18 +242,7 @@
             border-color: var(--primary);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 章节通用样式 */
+        /* 章节 */
         section {
             padding: 80px 2rem;
             max-width: 1400px;
@@ -313,16 +276,13 @@
         .section-desc {
             font-size: 1.1rem;
             color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
         }
 
-        /* 关于课程卡片 */
+        /* 概况卡片 */
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
-            margin-top: 2rem;
         }
 
         .overview-card {
@@ -330,13 +290,12 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         .overview-card:hover {
             border-color: var(--primary);
             transform: translateY(-4px);
-            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
         }
 
         .overview-card-icon {
@@ -352,102 +311,18 @@
         }
 
         .overview-card h3 {
-            font-size: 1.1rem;
             margin-bottom: 0.75rem;
         }
 
         .overview-card p {
             font-size: 0.9rem;
             color: var(--text-secondary);
-            line-height: 1.7;
         }
 
-        /* 学习路径 */
-        .path-container {
-            position: relative;
-            padding-left: 40px;
-        }
-
-        .path-line {
-            position: absolute;
-            left: 15px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
-        }
-
-        .path-item {
-            position: relative;
-            margin-bottom: 2rem;
-            padding: 1.25rem 1.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .path-item:hover {
-            border-color: var(--primary);
-            transform: translateX(8px);
-        }
-
-        .path-dot {
-            position: absolute;
-            left: -33px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            background: var(--primary);
-            border-radius: 50%;
-            border: 3px solid var(--bg-dark);
-            box-shadow: 0 0 0 3px var(--primary);
-        }
-
-        .path-item-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .path-item-number {
-            width: 28px;
-            height: 28px;
-            background: var(--gradient-1);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .path-item-title {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-
-        .path-item-hours {
-            margin-left: auto;
-            padding: 0.25rem 0.75rem;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--primary);
-        }
-
-        .path-item-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-left: 44px;
-        }
-
-        /* 项目卡片网格 */
+        /* 项目卡片 */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 1.5rem;
         }
 
@@ -456,7 +331,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         .project-card:hover {
@@ -469,6 +344,7 @@
             padding: 1.5rem;
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
             border-bottom: 1px solid var(--border);
+            cursor: pointer;
         }
 
         .project-card-number {
@@ -493,50 +369,143 @@
         }
 
         .project-card-body {
-            padding: 1.5rem;
+            padding: 0;
         }
 
-        .project-card-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            line-height: 1.7;
+        /* 任务列表 */
+        .task-list {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .project-card-tasks {
+        .task-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .task-item-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .task-tag {
-            display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.625rem;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: var(--primary);
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
         }
 
-        .task-tag.core {
-            background: rgba(34, 197, 94, 0.1);
+        .task-item-title {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-type {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .task-type.core {
+            background: rgba(34, 197, 94, 0.2);
             color: var(--success);
         }
 
-        .task-tag.practice {
-            background: rgba(245, 158, 11, 0.1);
+        .task-type.practice {
+            background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
+        }
+
+        .task-type.expand {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--secondary);
+        }
+
+        .task-arrow {
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+
+        .task-item.expanded .task-arrow {
+            transform: rotate(180deg);
+        }
+
+        .task-content {
+            display: none;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .task-item.expanded .task-content {
+            display: block;
+        }
+
+        .task-content h4 {
+            color: var(--primary);
+            margin: 1rem 0 0.5rem;
+            font-size: 1rem;
+        }
+
+        .task-content h4:first-child {
+            margin-top: 0;
+        }
+
+        .task-content p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .task-content .step {
+            background: var(--bg-card);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--primary);
+        }
+
+        .task-content .step-title {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .task-content .command {
+            display: block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #22d3ee;
+            margin: 0.25rem 0;
+            word-break: break-all;
+        }
+
+        .task-content code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #22d3ee;
         }
 
         .project-card-footer {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
         }
 
         .task-count {
@@ -544,10 +513,10 @@
             color: var(--text-secondary);
         }
 
-        /* 考核评价 */
+        /* 考核 */
         .assessment-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
 
@@ -559,7 +528,6 @@
         }
 
         .assessment-card h3 {
-            font-size: 1.25rem;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -569,7 +537,6 @@
         .grade-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 0.875rem 0;
             border-bottom: 1px solid var(--border);
         }
@@ -584,12 +551,11 @@
 
         .grade-value {
             font-weight: 600;
-            font-size: 1.1rem;
         }
 
         .grade-value.highlight {
             color: var(--primary);
-            font-size: 1.25rem;
+            font-size: 1.2rem;
         }
 
         /* 页脚 */
@@ -600,46 +566,11 @@
             background: rgba(15, 23, 42, 0.5);
         }
 
-        .footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .footer-logo {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
         .footer-text {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-bottom: 1rem;
         }
 
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .footer-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        .footer-copyright {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* 回到顶部 */
         .back-to-top {
             position: fixed;
             bottom: 2rem;
@@ -654,8 +585,7 @@
             cursor: pointer;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s;
             border: none;
             color: white;
             font-size: 1.25rem;
@@ -666,65 +596,24 @@
             visibility: visible;
         }
 
-        .back-to-top:hover {
-            transform: translateY(-4px);
-        }
-
         /* 响应式 */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-stats {
-                flex-wrap: wrap;
-                gap: 2rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .path-container {
-                padding-left: 30px;
-            }
-
-            .path-dot {
-                left: -25px;
-            }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-stats { flex-wrap: wrap; gap: 2rem; }
+            .nav-links { display: none; }
+            .section-title { font-size: 2rem; }
+            .projects-grid { grid-template-columns: 1fr; }
         }
 
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
 
-    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-content">
             <div class="nav-brand">
@@ -733,7 +622,6 @@
             </div>
             <div class="nav-links">
                 <a href="#overview" class="nav-link active">课程概况</a>
-                <a href="#path" class="nav-link">学习路径</a>
                 <a href="#projects" class="nav-link">项目训练</a>
                 <a href="#assessment" class="nav-link">考核评价</a>
                 <a href="https://github.com/shiyingyz/shiyingyz.github.io" target="_blank" class="nav-link">📂 GitHub</a>
@@ -741,7 +629,7 @@
         </div>
     </nav>
 
-    <!-- Hero区域 -->
+    <!-- Hero -->
     <section class="hero">
         <div class="hero-content">
             <div class="hero-badge">
@@ -749,7 +637,7 @@
                 <span>长沙民政职业技术学院 · 软件学院</span>
             </div>
             <h1>数据库运维与管理</h1>
-            <p class="hero-subtitle">跟着做 · 学会 DBA 核心技能 | 行动导向教学 · 30%理论 + 70%实践</p>
+            <p class="hero-subtitle">跟着做 · 学会 DBA 核心技能 | 行动导向教学 · 70%实践占比</p>
             
             <div class="hero-stats">
                 <div class="stat-item">
@@ -757,16 +645,12 @@
                     <div class="stat-label">教学项目</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">32</div>
-                    <div class="stat-label">总课时</div>
-                </div>
-                <div class="stat-item">
                     <div class="stat-value">39</div>
                     <div class="stat-label">实训任务</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">5</div>
-                    <div class="stat-label">核心技能</div>
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">总课时</div>
                 </div>
             </div>
 
@@ -791,148 +675,30 @@
                 <h3>课程目标</h3>
                 <p>掌握MySQL数据库的安装配置、权限管理、日志分析、备份恢复、性能监控、主从复制、集群运维等核心技能，培养企业级DBA思维与实战能力。</p>
             </div>
-
             <div class="overview-card">
                 <div class="overview-card-icon">📖</div>
                 <h3>参考教材</h3>
                 <p>《MySQL数据库运维与管理》<br>邓文达、邓河 主编<br>ISBN: 978-7-115-60614-3</p>
             </div>
-
             <div class="overview-card">
                 <div class="overview-card-icon">💻</div>
                 <h3>学习环境</h3>
                 <p>CentOS 7 + MySQL 8.0<br>Windows + Linux 双平台实践<br>云服务器 + Docker容器</p>
             </div>
-
             <div class="overview-card">
                 <div class="overview-card-icon">👥</div>
                 <h3>面向对象</h3>
-                <p>高职院校计算机软件技术专业<br>大二学生（大数据应用开发方向）<br>对数据库运维感兴趣的学习者</p>
+                <p>高职院校计算机软件技术专业<br>大二学生（大数据应用开发方向）</p>
             </div>
-
             <div class="overview-card">
                 <div class="overview-card-icon">⚡</div>
                 <h3>核心技能</h3>
                 <p>数据库安装与配置 · 权限与安全管理<br>日志分析与故障排查 · 数据备份与恢复<br>性能监控与优化 · 高可用集群部署</p>
             </div>
-
             <div class="overview-card">
                 <div class="overview-card-icon">🌟</div>
                 <h3>教学特色</h3>
                 <p>行动导向：跟着做就能学会<br>场景驱动：天天电器业务案例贯穿始终<br>循序渐进：P1→P10 逐级深入</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 学习路径 -->
-    <section id="path">
-        <div class="section-header">
-            <span class="section-tag">Learning Path</span>
-            <h2 class="section-title">学习路径</h2>
-            <p class="section-desc">从数据库认知到智能运维，10个项目带你系统掌握DBA核心技能</p>
-        </div>
-
-        <div class="path-container">
-            <div class="path-line"></div>
-            
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P1</span>
-                    <span class="path-item-title">数据库认知</span>
-                    <span class="path-item-hours">4课时</span>
-                </div>
-                <p class="path-item-desc">了解数据库运维工作，认识DBA岗位职责，就业前景分析</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P2</span>
-                    <span class="path-item-title">安装配置</span>
-                    <span class="path-item-hours">4课时</span>
-                </div>
-                <p class="path-item-desc">Linux/Windows双平台安装MySQL，配置服务环境</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P3</span>
-                    <span class="path-item-title">权限安全</span>
-                    <span class="path-item-hours">4课时</span>
-                </div>
-                <p class="path-item-desc">用户管理、权限授予与收回、远程访问控制、安全加固</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P4</span>
-                    <span class="path-item-title">日志分析</span>
-                    <span class="path-item-hours">6课时</span>
-                </div>
-                <p class="path-item-desc">错误日志、慢查询日志、二进制日志分析与故障排查</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P5</span>
-                    <span class="path-item-title">备份恢复</span>
-                    <span class="path-item-hours">6课时</span>
-                </div>
-                <p class="path-item-desc">mysqldump、XtraBackup物理备份、时间点恢复、自动化备份</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P6</span>
-                    <span class="path-item-title">性能优化</span>
-                    <span class="path-item-hours">6课时</span>
-                </div>
-                <p class="path-item-desc">MONyog监控、压力测试、SQL优化、EXPLAIN分析、阿里云RDS</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P7</span>
-                    <span class="path-item-title">主从复制</span>
-                    <span class="path-item-hours">6课时</span>
-                </div>
-                <p class="path-item-desc">主从复制配置、半同步复制、并行复制、GTID复制</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P8</span>
-                    <span class="path-item-title">集群运维</span>
-                    <span class="path-item-hours">8课时</span>
-                </div>
-                <p class="path-item-desc">MySQL Cluster集群部署与管理，双平台集群搭建</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P9</span>
-                    <span class="path-item-title">Redis运维</span>
-                    <span class="path-item-hours">8课时</span>
-                </div>
-                <p class="path-item-desc">Redis监控、集群创建、MySQL+Redis读写分离实战</p>
-            </div>
-
-            <div class="path-item">
-                <div class="path-dot"></div>
-                <div class="path-item-header">
-                    <span class="path-item-number">P10</span>
-                    <span class="path-item-title">智能运维</span>
-                    <span class="path-item-hours">12课时</span>
-                </div>
-                <p class="path-item-desc">goInception DDL审核、自动化运维平台、智能化运维实践</p>
             </div>
         </div>
     </section>
@@ -942,209 +708,1055 @@
         <div class="section-header">
             <span class="section-tag">Training Projects</span>
             <h2 class="section-title">项目训练</h2>
-            <p class="section-desc">10个实战项目，39个实训任务，涵盖DBA全栈技能</p>
+            <p class="section-desc">点击展开查看每个任务的详细操作步骤，跟着做就能学会！</p>
         </div>
 
         <div class="projects-grid">
             <!-- P1 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P1 · 入门</span>
                     <h3 class="project-card-title">了解数据库运维工作</h3>
                     <span class="project-card-hours">📅 4课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">认识DBA职业，了解数据库运维岗位要求，分析就业前景与行业趋势。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag">📝 任务1-1</span>
-                        <span class="task-tag">📝 任务1-2</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务1-1 了解数据库工程师职位要求及就业前景</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【知识目标】</h4>
+                                <p>了解数据库工程师(DBA)的主要岗位职责</p>
+                                <p>了解数据库工程师应掌握的知识结构</p>
+                                <p>了解数据库工程师的就业前景</p>
+                                
+                                <h4>【能力目标】</h4>
+                                <p>能够收集和分析数据库相关岗位的招聘信息</p>
+                                <p>能够归纳出数据库岗位的核心技能要求</p>
+                                
+                                <h4>【任务内容】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：搜索数据库工程师相关岗位</div>
+                                    <p>访问招聘网站（如Boss直聘、智联招聘、前程无忧等），搜索"数据库工程师"、"MySQL DBA"、"数据库运维"等关键词</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：分析岗位要求</div>
+                                    <p>收集至少5个相关岗位的招聘信息，整理以下信息：</p>
+                                    <p>• 岗位职责</p>
+                                    <p>• 技能要求（技术栈、工具）</p>
+                                    <p>• 薪资范围</p>
+                                    <p>• 学历要求</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：撰写分析报告</div>
+                                    <p>根据收集的信息，撰写一份简短的就业前景分析报告（500字以上）</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务1-2 了解国内数据库运维管理平台</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【知识目标】</h4>
+                                <p>了解常用数据库运维管理平台</p>
+                                <p>了解云数据库服务</p>
+                                
+                                <h4>【任务内容】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：了解商业数据库运维平台</div>
+                                    <p>访问以下平台官网，了解其功能特点：</p>
+                                    <p>• 云和恩墨（MySQL、SQL Server、Oracle）</p>
+                                    <p>• 沃趣科技（QCon、BeeGCRS）</p>
+                                    <p>• 爱可生（云树DMP）</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：了解开源数据库运维工具</div>
+                                    <p>了解以下开源工具：</p>
+                                    <p>• phpMyAdmin - Web端MySQL管理</p>
+                                    <p>• MySQL Workbench - 官方GUI工具</p>
+                                    <p>• Navicat - 商业数据库客户端</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：了解云数据库服务</div>
+                                    <p>了解各大云厂商的数据库服务：</p>
+                                    <p>• 阿里云RDS</p>
+                                    <p>• 腾讯云CDB</p>
+                                    <p>• 华为云RDS</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">2个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">2个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P2 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P2 · 基础</span>
                     <h3 class="project-card-title">安装和配置MySQL数据库</h3>
                     <span class="project-card-hours">📅 4课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">在CentOS和Windows系统下安装MySQL 8.0，配置服务环境与远程连接。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务</span>
-                        <span class="task-tag">📝 任务2-3</span>
-                        <span class="task-tag">📝 任务2-4</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务2-1 在Linux系统下安装配置MySQL</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务环境】</h4>
+                                <p>• 虚拟机：CentOS 7.x</p>
+                                <p>• MySQL版本：MySQL 8.0</p>
+                                
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：检查并卸载mariadb</div>
+                                    <code>rpm -qa | grep mariadb</code>
+                                    <code>rpm -e --nodeps mariadb-libs-xxx</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：下载并安装MySQL Yum Repository</div>
+                                    <code>wget https://dev.mysql.com/get/mysql80-community-release-el7-7.noarch.rpm</code>
+                                    <code>rpm -ivh mysql80-community-release-el7-7.noarch.rpm</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：安装MySQL服务器</div>
+                                    <code>yum install -y mysql-community-server</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：启动MySQL服务</div>
+                                    <code>systemctl start mysqld</code>
+                                    <code>systemctl enable mysqld</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤5：获取临时密码并登录</div>
+                                    <code>grep 'temporary password' /var/log/mysqld.log</code>
+                                    <code>mysql -u root -p</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤6：修改root密码</div>
+                                    <code>ALTER USER 'root'@'localhost' IDENTIFIED BY 'YourNewPass123!';</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务2-2 登录、退出MySQL服务器</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：本机登录MySQL</div>
+                                    <code>mysql -u root -p</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：查看MySQL版本</div>
+                                    <code>SELECT VERSION();</code>
+                                    <code>SELECT NOW();</code>
+                                    <code>SELECT USER();</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：退出MySQL</div>
+                                    <code>EXIT;</code>
+                                    <code>QUIT;</code>
+                                    <code>\q</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务2-3 在Windows系统下安装配置MySQL</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：下载MySQL安装包</div>
+                                    <p>访问 https://dev.mysql.com/downloads/mysql/ 下载Windows版本</p>
+                                    <p>选择 Windows (x86, 64-bit), MSI Installer</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：运行安装向导</div>
+                                    <p>双击.msi文件，选择"Custom"安装类型</p>
+                                    <p>选择安装路径，建议使用 D:\MySQL</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：配置MySQL</div>
+                                    <p>选择"Standalone MySQL Server"</p>
+                                    <p>设置root密码</p>
+                                    <p>设置服务名称和端口（默认3306）</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：验证安装</div>
+                                    <code>mysql -u root -p</code>
+                                    <code>SHOW DATABASES;</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务2-4 第三方运维平台下的自动化部署</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务环境】</h4>
+                                <p>• 云平台或Docker环境</p>
+                                
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：使用Docker安装MySQL</div>
+                                    <code>docker pull mysql:8.0</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：运行MySQL容器</div>
+                                    <code>docker run -d --name mysql8 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql:8.0</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：连接测试</div>
+                                    <code>docker exec -it mysql8 mysql -u root -p</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">4个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P3 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P3 · 安全</span>
                     <h3 class="project-card-title">管理MySQL权限与安全</h3>
                     <span class="project-card-hours">📅 4课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">创建用户、授予权限、收回权限、远程访问控制、安全加固实践。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×2</span>
-                        <span class="task-tag practice">📝 实训任务×2</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务3-1 建立MySQL普通账户并登录</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建新用户</div>
+                                    <code>CREATE USER 'testuser'@'localhost' IDENTIFIED BY 'Test123456!';</code>
+                                    <code>CREATE USER 'testuser'@'%' IDENTIFIED BY 'Test123456!';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：查看用户信息</div>
+                                    <code>SELECT User, Host FROM mysql.user;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：使用新账户登录</div>
+                                    <code>EXIT;</code>
+                                    <code>mysql -u testuser -p</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：删除测试用户</div>
+                                    <code>DROP USER 'testuser'@'localhost';</code>
+                                    <code>DROP USER 'testuser'@'%';</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务3-2 授权数据库的远程访问</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建远程登录用户</div>
+                                    <code>CREATE USER 'remote_user'@'%' IDENTIFIED BY 'Remote123!';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：授予所有权限</div>
+                                    <code>GRANT ALL PRIVILEGES ON *.* TO 'remote_user'@'%';</code>
+                                    <code>FLUSH PRIVILEGES;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：配置防火墙</div>
+                                    <code>firewall-cmd --add-port=3306/tcp --permanent</code>
+                                    <code>firewall-cmd --reload</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：修改绑定地址</div>
+                                    <code>vim /etc/my.cnf</code>
+                                    <code>bind-address=0.0.0.0</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤5：远程连接测试</div>
+                                    <code>mysql -h 服务器IP -u remote_user -p</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务3-3 授权数据库表的读写操作</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建业务数据库</div>
+                                    <code>CREATE DATABASE shop_db;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：创建应用用户</div>
+                                    <code>CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'App123456!';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：授予特定数据库权限</div>
+                                    <code>GRANT SELECT, INSERT, UPDATE, DELETE ON shop_db.* TO 'app_user'@'localhost';</code>
+                                    <code>FLUSH PRIVILEGES;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：验证权限</div>
+                                    <code>SHOW GRANTS FOR 'app_user'@'localhost';</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务3-4 收回MySQL普通账户权限</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：查看用户权限</div>
+                                    <code>SHOW GRANTS FOR 'app_user'@'localhost';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：收回特定权限</div>
+                                    <code>REVOKE DELETE ON shop_db.* FROM 'app_user'@'localhost';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：收回所有权限</div>
+                                    <code>REVOKE ALL PRIVILEGES ON shop_db.* FROM 'app_user'@'localhost';</code>
+                                    <code>FLUSH PRIVILEGES;</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">4个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P4 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P4 · 日志</span>
                     <h3 class="project-card-title">分析MySQL日志</h3>
                     <span class="project-card-hours">📅 6课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">错误日志分析、慢查询日志统计、二进制日志查看与数据恢复。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×3</span>
-                        <span class="task-tag">📝 任务4-4</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务4-1 通过错误日志查看MySQL故障原因</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：定位错误日志位置</div>
+                                    <code>mysql -u root -p -e "SHOW VARIABLES LIKE 'log_error';"</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：查看错误日志内容</div>
+                                    <code>cat /var/log/mysqld.log</code>
+                                    <code>tail -100 /var/log/mysqld.log</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：模拟故障并分析</div>
+                                    <p>故意输入错误密码多次，观察错误日志记录</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务4-2 记录客户端连接错误信息</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：启用连接日志</div>
+                                    <code>SET GLOBAL general_log = 'ON';</code>
+                                    <code>SET GLOBAL general_log_file = '/var/log/mysql/general.log';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：查看连接日志</div>
+                                    <code>tail -f /var/log/mysql/general.log</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务4-3 使用mysqldumpslow统计分析慢查询</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：开启慢查询日志</div>
+                                    <code>SET GLOBAL slow_query_log = 'ON';</code>
+                                    <code>SET GLOBAL long_query_time = 2;</code>
+                                    <code>SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：执行慢查询测试</div>
+                                    <code>SELECT SLEEP(3);</code>
+                                    <code>SELECT * FROM large_table;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：使用mysqldumpslow分析</div>
+                                    <code>mysqldumpslow -s t /var/log/mysql/slow.log</code>
+                                    <code>mysqldumpslow -s c -t 10 /var/log/mysql/slow.log</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务4-4 使用mysqlbinlog通过时间点恢复数据</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：开启二进制日志</div>
+                                    <code>vim /etc/my.cnf</code>
+                                    <code>server-id=1</code>
+                                    <code>log-bin=mysql-bin</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：查看二进制日志</div>
+                                    <code>SHOW MASTER STATUS;</code>
+                                    <code>SHOW BINLOG EVENTS IN 'mysql-bin.000001';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：基于时间点恢复</div>
+                                    <code>mysqlbinlog --stop-datetime="2024-01-01 12:00:00" mysql-bin.000001 | mysql -u root -p</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">4个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P5 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P5 · 备份</span>
                     <h3 class="project-card-title">备份与恢复MySQL数据库</h3>
                     <span class="project-card-hours">📅 6课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">mysqldump逻辑备份、XtraBackup物理备份、自动备份脚本、数据迁移。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×3</span>
-                        <span class="task-tag practice">📝 实训任务×2</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务5-1 使用mysqldump备份和恢复数据</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建测试数据库</div>
+                                    <code>CREATE DATABASE backup_test;</code>
+                                    <code>USE backup_test;</code>
+                                    <code>CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(50));</code>
+                                    <code>INSERT INTO users VALUES (1, '张三'), (2, '李四');</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：备份单个数据库</div>
+                                    <code>mysqldump -u root -p backup_test > /tmp/backup_test.sql</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：备份所有数据库</div>
+                                    <code>mysqldump -u root -p --all-databases > /tmp/all_databases.sql</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：恢复数据库</div>
+                                    <code>mysql -u root -p backup_test < /tmp/backup_test.sql</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务5-2 使用XtraBackup备份和恢复</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：安装XtraBackup</div>
+                                    <code>yum install percona-xtrabackup-24 -y</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：全量备份</div>
+                                    <code>innobackupex --user=root --password=123456 /backup/</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：准备备份</div>
+                                    <code>innobackupex --apply-log /backup/2024-01-01_xx-xx-xx/</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：恢复数据</div>
+                                    <code>innobackupex --copy-back /backup/2024-01-01_xx-xx-xx/</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务5-3 使用mysqldump+crontab自动备份</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建备份脚本</div>
+                                    <code>vim /root/mysql_backup.sh</code>
+                                    <code>#!/bin/bash</code>
+                                    <code>date=`date +%Y%m%d%H%M%S`</code>
+                                    <code>mysqldump -u root -p'123456' --all-databases > /backup/mysql_$date.sql</code>
+                                    <code>find /backup -name "*.sql" -mtime +7 -delete</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：设置执行权限</div>
+                                    <code>chmod +x /root/mysql_backup.sh</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：配置定时任务</div>
+                                    <code>crontab -e</code>
+                                    <code>0 2 * * * /root/mysql_backup.sh</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务5-4 迁移MySQL数据库</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：备份源数据库</div>
+                                    <code>mysqldump -u root -p shop_db > shop_db.sql</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：传输到目标服务器</div>
+                                    <code>scp shop_db.sql root@目标IP:/tmp/</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：在目标服务器恢复</div>
+                                    <code>mysql -u root -p -e "CREATE DATABASE shop_db;"</code>
+                                    <code>mysql -u root -p shop_db < /tmp/shop_db.sql</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务5-5 迁移MySQL表数据</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：导出指定表</div>
+                                    <code>mysqldump -u root -p shop_db orders > orders.sql</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：导入到目标表</div>
+                                    <code>mysql -u root -p shop_db < orders.sql</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">5个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">5个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P6 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P6 · 优化</span>
                     <h3 class="project-card-title">监控、测试并优化MySQL性能</h3>
                     <span class="project-card-hours">📅 6课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">MONyog监控工具、压力测试、SQL优化、EXPLAIN分析、云数据库实践。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×3</span>
-                        <span class="task-tag practice">📝 实训任务×3</span>
-                        <span class="task-tag">🌱 拓展任务×1</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务6-1 安装MONyog工具监控MySQL</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：下载MONyog</div>
+                                    <p>访问 https://www.webyog.com/product/monyog 下载Linux版</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：安装MONyog</div>
+                                    <code>chmod +x MONyog_linux.sh</code>
+                                    <code>./MONyog_linux.sh</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：启动并访问Web界面</div>
+                                    <code>service MONyogd start</code>
+                                    <p>访问 http://服务器IP:5555</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务6-2 对MySQL数据库读写性能调优</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：查看当前配置</div>
+                                    <code>SHOW VARIABLES LIKE 'max_connections';</code>
+                                    <code>SHOW VARIABLES LIKE 'innodb_buffer_pool_size';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：调整连接数</div>
+                                    <code>SET GLOBAL max_connections = 500;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：调整InnoDB缓冲池</div>
+                                    <code>SET GLOBAL innodb_buffer_pool_size = 134217728;</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务6-4 使用EXPLAIN分析并优化单表SQL查询</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建测试表</div>
+                                    <code>CREATE TABLE orders (id INT, user_id INT, product VARCHAR(50), create_time DATETIME);</code>
+                                    <code>INSERT INTO orders VALUES (1, 100, '商品A', NOW());</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：执行EXPLAIN分析</div>
+                                    <code>EXPLAIN SELECT * FROM orders WHERE user_id = 100;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：创建索引优化</div>
+                                    <code>CREATE INDEX idx_user_id ON orders(user_id);</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：再次分析对比</div>
+                                    <code>EXPLAIN SELECT * FROM orders WHERE user_id = 100;</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务6-5 使用EXPLAIN分析并优化多表SQL查询</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：创建测试表</div>
+                                    <code>CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(50));</code>
+                                    <code>CREATE TABLE orders (id INT, user_id INT, total DECIMAL(10,2));</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：多表关联查询</div>
+                                    <code>SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：EXPLAIN分析</div>
+                                    <code>EXPLAIN SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id;</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">7个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">7个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P7 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P7 · 复制</span>
                     <h3 class="project-card-title">MySQL主从复制</h3>
                     <span class="project-card-hours">📅 6课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">传统主从复制、半同步复制、并行复制、GTID模式主从复制配置。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×2</span>
-                        <span class="task-tag practice">📝 实训任务×2</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务7-1 在Linux系统下建立MySQL主从复制</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【环境说明】</h4>
+                                <p>• 主库：CentOS 7 + MySQL 8.0 (192.168.1.100)</p>
+                                <p>• 从库：CentOS 7 + MySQL 8.0 (192.168.1.101)</p>
+                                
+                                <h4>【主库配置步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：配置主库my.cnf</div>
+                                    <code>vim /etc/my.cnf</code>
+                                    <code>[mysqld]</code>
+                                    <code>server-id=1</code>
+                                    <code>log-bin=mysql-bin</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：创建复制账户</div>
+                                    <code>CREATE USER 'repl'@'%' IDENTIFIED BY 'Repl123!';</code>
+                                    <code>GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';</code>
+                                    <code>FLUSH PRIVILEGES;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：获取binlog位置</div>
+                                    <code>SHOW MASTER STATUS;</code>
+                                </div>
+
+                                <h4>【从库配置步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤4：配置从库my.cnf</div>
+                                    <code>vim /etc/my.cnf</code>
+                                    <code>[mysqld]</code>
+                                    <code>server-id=2</code>
+                                    <code>relay-log=mysql-relay-bin</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤5：配置复制连接</div>
+                                    <code>CHANGE MASTER TO</code>
+                                    <code>MASTER_HOST='192.168.1.100',</code>
+                                    <code>MASTER_USER='repl',</code>
+                                    <code>MASTER_PASSWORD='Repl123!',</code>
+                                    <code>MASTER_LOG_FILE='mysql-bin.000001',</code>
+                                    <code>MASTER_LOG_POS=154;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤6：启动复制并验证</div>
+                                    <code>START SLAVE;</code>
+                                    <code>SHOW SLAVE STATUS\G</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务7-2 配置MySQL半同步复制</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：主库安装半同步插件</div>
+                                    <code>INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：启用半同步</div>
+                                    <code>SET GLOBAL rpl_semi_sync_master_enabled = ON;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：从库安装插件</div>
+                                    <code>INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';</code>
+                                    <code>SET GLOBAL rpl_semi_sync_slave_enabled = ON;</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务7-3 配置MySQL并行复制</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：设置并行复制</div>
+                                    <code>SET GLOBAL slave_parallel_workers = 4;</code>
+                                    <code>SET GLOBAL slave_parallel_type = 'LOGICAL_CLOCK';</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：重启从库</div>
+                                    <code>STOP SLAVE;</code>
+                                    <code>START SLAVE;</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">📝 任务7-4 基于GTID建立MySQL主从复制</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：主库启用GTID</div>
+                                    <code>vim /etc/my.cnf</code>
+                                    <code>gtid_mode=ON</code>
+                                    <code>enforce_gtid_consistency=ON</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：从库启用GTID</div>
+                                    <code>gtid_mode=ON</code>
+                                    <code>enforce_gtid_consistency=ON</code>
+                                    <code>log-slave-updates=ON</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：配置GTID复制</div>
+                                    <code>CHANGE MASTER TO</code>
+                                    <code>MASTER_AUTO_POSITION=1</code>
+                                    <code>START SLAVE;</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">4个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P8 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P8 · 集群</span>
                     <h3 class="project-card-title">搭建及运维MySQL Cluster</h3>
                     <span class="project-card-hours">📅 8课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">MySQL Cluster集群原理、Linux/Windows双平台集群部署与管理。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×2</span>
-                        <span class="task-tag practice">📝 实训任务×1</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务8-1 在Linux系统下建立MySQL Cluster集群</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【集群架构】</h4>
+                                <p>• 1个管理节点(MGM)</p>
+                                <p>• 2个数据节点(NDBD)</p>
+                                <p>• 2个SQL节点(MySQLD)</p>
+                                
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：下载MySQL Cluster</div>
+                                    <code>wget https://dev.mysql.com/get/Downloads/MySQL-Cluster-7.6/mysql-cluster-gpl-7.6.7-linux-glibc2.12-x86_64.tar.gz</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：配置管理节点</div>
+                                    <code>mkdir -p /var/lib/mysql-cluster</code>
+                                    <code>vim /var/lib/mysql-cluster/config.ini</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：启动管理节点</div>
+                                    <code>ndb_mgmd -f /var/lib/mysql-cluster/config.ini</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：启动数据节点</div>
+                                    <code>ndbd --initial</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤5：启动SQL节点</div>
+                                    <code>mysqld --user=mysql &</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务8-3 测试Linux下的MySQL Cluster</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：检查集群状态</div>
+                                    <code>ndb_mgm</code>
+                                    <code>SHOW</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：创建Cluster表</div>
+                                    <code>CREATE TABLE cluster_test (id INT PRIMARY KEY) ENGINE=NDBCLUSTER;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：测试数据同步</div>
+                                    <code>INSERT INTO cluster_test VALUES (1), (2), (3);</code>
+                                    <code>SELECT * FROM cluster_test;</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">3个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">3个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P9 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P9 · Redis</span>
                     <h3 class="project-card-title">结合Redis的MySQL运维</h3>
                     <span class="project-card-hours">📅 8课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">Redis监控、集群创建、RedisManager使用、MySQL+Redis读写分离。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×3</span>
-                        <span class="task-tag practice">📝 实训任务×1</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务9-1 使用Redis-cli监控Redis服务状态</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：安装Redis</div>
+                                    <code>yum install redis -y</code>
+                                    <code>systemctl start redis</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：连接Redis</div>
+                                    <code>redis-cli</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：常用监控命令</div>
+                                    <code>PING</code>
+                                    <code>INFO</code>
+                                    <code>INFO clients</code>
+                                    <code>CLIENT LIST</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务9-2 创建Redis集群</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：准备Redis节点</div>
+                                    <p>准备6个Redis节点（3主3从）</p>
+                                    <p>端口：7001-7006</p>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：配置Redis节点</div>
+                                    <code>port 7001</code>
+                                    <code>cluster-enabled yes</code>
+                                    <code>cluster-config-file nodes.conf</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：创建集群</div>
+                                    <code>redis-cli --cluster create 192.168.1.1:7001 192.168.1.1:7002 192.168.1.1:7003 192.168.1.1:7004 192.168.1.1:7005 192.168.1.1:7006 --cluster-replicas 1</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务9-4 MySQL结合Redis实现读写分离</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：安装Redis扩展</div>
+                                    <code>yum install php-redis -y</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：PHP代码实现</div>
+                                    <code>&lt;?php</code>
+                                    <code>// 连接Redis</code>
+                                    <code>$redis = new Redis();</code>
+                                    <code>$redis->connect('127.0.0.1', 6379);</code>
+                                    <code>// 读操作：先查Redis</code>
+                                    <code>$cache = $redis->get('user:1');</code>
+                                    <code>if ($cache) {</code>
+                                    <code>    $user = json_decode($cache, true);</code>
+                                    <code>} else {</code>
+                                    <code>    // 查MySQL</code>
+                                    <code>    $user = $mysqli->query("SELECT * FROM users WHERE id=1");</code>
+                                    <code>    // 写入Redis</code>
+                                    <code>    $redis->setex('user:1', 3600, json_encode($user));</code>
+                                    <code>}</code>
+                                    <code>// 写操作：先写MySQL，再写Redis</code>
+                                    <code>// UPDATE users SET ... WHERE id=1;</code>
+                                    <code>// $redis->del('user:1');</code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">4个任务 · 点击展开查看详情</span>
                 </div>
             </div>
 
             <!-- P10 -->
             <div class="project-card">
-                <div class="project-card-header">
+                <div class="project-card-header" onclick="toggleProject(this)">
                     <span class="project-card-number">P10 · 进阶</span>
                     <h3 class="project-card-title">数据库自动化运维</h3>
                     <span class="project-card-hours">📅 12课时</span>
                 </div>
                 <div class="project-card-body">
-                    <p class="project-card-desc">goInception安装、DDL审核、自动化运维平台搭建、智能化运维实践。</p>
-                    <div class="project-card-tasks">
-                        <span class="task-tag core">⭐ 核心任务×2</span>
-                        <span class="task-tag practice">📝 实训任务×2</span>
+                    <div class="task-list">
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务10-1 安装goInception</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：下载goInception</div>
+                                    <code>wget https://github.com/hanchunshu/goInception/releases/download/v1.0/goInception-linux-amd64.tar.gz</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：解压安装</div>
+                                    <code>tar -zxvf goInception-linux-amd64.tar.gz</code>
+                                    <code>mv goInception /usr/local/</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：配置goInception</div>
+                                    <code>vim /usr/local/goInception/config.toml</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤4：启动服务</div>
+                                    <code>/usr/local/goInception/goInception -config /usr/local/goInception/config.toml</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-item" onclick="toggleTask(this, event)">
+                            <div class="task-item-header">
+                                <span class="task-item-title">⭐ 任务10-2 使用goInception完成DDL审核</span>
+                                <span class="task-type core">核心</span>
+                            </div>
+                            <div class="task-content">
+                                <h4>【任务步骤】</h4>
+                                <div class="step">
+                                    <div class="step-title">步骤1：配置审核规则</div>
+                                    <code>inception get variables;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤2：执行DDL审核</div>
+                                    <code>inception check alter table t1 add column c1 int;</code>
+                                </div>
+                                <div class="step">
+                                    <div class="step-title">步骤3：查看审核结果</div>
+                                    <p>分析返回的错误级别和修改建议</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="project-card-footer">
-                    <span class="task-count">4个任务</span>
-                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">查看详情</a>
+                    <span class="task-count">2个任务 · 点击展开查看详情</span>
                 </div>
             </div>
         </div>
@@ -1206,87 +1818,52 @@
                     <span class="grade-value">P8-P10</span>
                 </div>
             </div>
-
-            <div class="assessment-card">
-                <h3>📚 评分标准</h3>
-                <div class="grade-item">
-                    <span class="grade-label">⭐ 优秀 90-100</span>
-                    <span class="grade-value">独立完成+拓展</span>
-                </div>
-                <div class="grade-item">
-                    <span class="grade-label">✅ 良好 80-89</span>
-                    <span class="grade-value">按时完成+质量高</span>
-                </div>
-                <div class="grade-item">
-                    <span class="grade-label">📖 合格 60-79</span>
-                    <span class="grade-value">基本完成</span>
-                </div>
-            </div>
         </div>
     </section>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">🗄️</div>
-            <p class="footer-text">
-                <strong>数据库运维与管理</strong><br>
-                长沙民政职业技术学院 · 软件学院
-            </p>
-            <div class="footer-links">
-                <a href="https://github.com/shiyingyz/shiyingyz.github.io" target="_blank" class="footer-link">📂 GitHub 仓库</a>
-                <a href="https://shiyingyz.github.io" target="_blank" class="footer-link">🌐 主页</a>
-            </div>
-            <p class="footer-copyright">
-                基于《MySQL数据库运维与管理》(邓文达、邓河主编) 编写<br>
-                © 2024-2026 All Rights Reserved
-            </p>
+        <div class="footer-text">
+            <strong>数据库运维与管理</strong> · 长沙民政职业技术学院 · 软件学院<br>
+            基于《MySQL数据库运维与管理》(邓文达、邓河主编) · © 2024-2026
         </div>
     </footer>
 
-    <!-- 回到顶部 -->
     <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
 
     <script>
+        // 任务展开/收起
+        function toggleTask(element, event) {
+            event.stopPropagation();
+            element.classList.toggle('expanded');
+        }
+
+        // 项目展开/收起
+        function toggleProject(header) {
+            header.classList.toggle('expanded');
+            const card = header.closest('.project-card');
+            card.classList.toggle('expanded');
+        }
+
         // 滚动监听
         window.addEventListener('scroll', () => {
-            const backToTop = document.getElementById('backToTop');
-            if (window.scrollY > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
+            document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 300);
         });
 
-        // 回到顶部
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 平滑滚动到锚点
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
         // 导航高亮
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
-
         window.addEventListener('scroll', () => {
             let current = '';
             sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                if (window.scrollY >= sectionTop) {
+                if (window.scrollY >= section.offsetTop - 100) {
                     current = section.getAttribute('id');
                 }
             });
-
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === '#' + current) {
@@ -1295,12 +1872,14 @@
             });
         });
 
-        // 卡片点击跳转
-        document.querySelectorAll('.project-card').forEach((card, index) => {
-            card.addEventListener('click', () => {
-                const pNum = index + 1;
-                // 预留跳转逻辑
-                console.log(`跳转到项目 P${pNum}`);
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
             });
         });
     </script>
