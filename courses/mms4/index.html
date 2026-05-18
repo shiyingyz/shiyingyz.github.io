@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园二手交易C2C平台 - 项目功能规划与文档结构</title>
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2332;
+    --bg-card-hover: #1f2937;
+    --border-color: #1e3a5f;
+    --border-light: #2d4a6f;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-purple: #8b5cf6;
+    --accent-rose: #f43f5e;
+    --accent-orange: #f97316;
+    --accent-pink: #ec4899;
+    --accent-teal: #14b8a6;
+    --accent-indigo: #6366f1;
+    --shadow-glow: 0 0 30px rgba(59,130,246,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.08) 50%, rgba(6,182,212,0.06) 100%);
+    border-bottom: 1px solid var(--border-color);
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 32px; font-weight: 700; letter-spacing: 2px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #22d3ee);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .hero .subtitle {
+    font-size: 16px; color: var(--text-secondary); max-width: 700px; margin: 0 auto;
+  }
+  .hero .tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .hero .tag {
+    padding: 4px 14px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border-light);
+    color: var(--text-secondary); background: rgba(255,255,255,0.03);
+  }
+
+  /* Container */
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 22px; font-weight: 600; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .icon {
+    width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .section-desc { color: var(--text-muted); margin-bottom: 20px; font-size: 13px; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 36px;
+  }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 16px 20px; text-align: center;
+  }
+  .stat-card .num { font-size: 28px; font-weight: 700; }
+  .stat-card .label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Color mapping for modules */
+  .c-m1 { --mc: #3b82f6; } .c-m2 { --mc: #10b981; } .c-m3 { --mc: #f59e0b; }
+  .c-m4 { --mc: #8b5cf6; } .c-m5 { --mc: #ef4444; } .c-m6 { --mc: #f97316; }
+
+  /* Feature Grid */
+  .feature-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+    overflow: hidden; transition: border-color 0.2s;
+  }
+  .feature-card:hover { border-color: var(--border-light); }
+  .fc-header {
+    padding: 14px 18px; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .fc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .fc-title { font-weight: 600; font-size: 15px; }
+  .fc-badge {
+    margin-left: auto; padding: 2px 8px; border-radius: 4px; font-size: 11px;
+    background: rgba(255,255,255,0.05); color: var(--text-muted);
+  }
+  .fc-body { padding: 12px 18px 16px; }
+  .fc-list { list-style: none; }
+  .fc-list li {
+    padding: 5px 0; font-size: 13px; color: var(--text-secondary);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .fc-list li::before {
+    content: ""; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0;
+    background: var(--text-muted);
+  }
+
+  /* Tree structure */
+  .tree-container {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 24px; overflow-x: auto;
+  }
+  .tree { font-family: "Cascadia Code", "Fira Code", "Consolas", monospace; font-size: 13px; line-height: 1.9; }
+  .tree-root { color: var(--accent-cyan); font-weight: 600; }
+  .tree-folder { color: var(--accent-amber); }
+  .tree-file { color: var(--text-secondary); }
+  .tree-file-html { color: var(--accent-orange); }
+  .tree-file-vue { color: var(--accent-green); }
+  .tree-file-java { color: var(--accent-purple); }
+  .tree-file-sql { color: var(--accent-cyan); }
+  .tree-file-md { color: var(--accent-blue); }
+  .tree-file-yml { color: var(--accent-rose); }
+  .tree-file-prop { color: var(--accent-teal); }
+  .tree-icon { display: inline-block; width: 16px; text-align: center; }
+  .tree-count {
+    display: inline-block; background: rgba(255,255,255,0.06); border-radius: 4px;
+    padding: 0 6px; font-size: 11px; color: var(--text-muted); margin-left: 4px;
+  }
+  .tree-comment { color: var(--text-muted); font-style: italic; }
+
+  /* Architecture diagram */
+  .arch-diagram {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 28px; overflow-x: auto;
+  }
+  .arch-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .arch-box {
+    border: 1px solid; border-radius: 10px; padding: 14px 20px; text-align: center;
+    min-width: 140px; position: relative;
+  }
+  .arch-box .ab-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .arch-box .ab-desc { font-size: 11px; color: var(--text-muted); }
+  .arch-arrow { text-align: center; color: var(--text-muted); font-size: 18px; margin: 4px 0; letter-spacing: 8px; }
+
+  /* Module detail table */
+  .module-table-wrap { overflow-x: auto; }
+  .module-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: var(--bg-card); border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+  .module-table th {
+    background: rgba(255,255,255,0.03); padding: 12px 16px; text-align: left;
+    font-weight: 600; border-bottom: 1px solid var(--border-color); white-space: nowrap;
+    color: var(--text-primary);
+  }
+  .module-table td {
+    padding: 12px 16px; border-bottom: 1px solid rgba(30,58,95,0.5); vertical-align: top;
+    color: var(--text-secondary);
+  }
+  .module-table tr:last-child td { border-bottom: none; }
+  .module-table tr:hover { background: rgba(255,255,255,0.02); }
+  .m-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 12px;
+    font-weight: 500; color: #fff;
+  }
+
+  /* API table */
+  .api-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+    background: var(--bg-card); border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+  .api-table th {
+    background: rgba(255,255,255,0.03); padding: 10px 14px; text-align: left;
+    font-weight: 600; border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary); font-size: 12px; white-space: nowrap;
+  }
+  .api-table td {
+    padding: 10px 14px; border-bottom: 1px solid rgba(30,58,95,0.5);
+    color: var(--text-secondary); font-family: "Cascadia Code", monospace; font-size: 12px;
+  }
+  .api-method { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .method-get { background: rgba(16,185,129,0.15); color: #34d399; }
+  .method-post { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .method-put { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .method-del { background: rgba(239,68,68,0.15); color: #f87171; }
+
+  /* Doc summary cards */
+  .doc-summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px; margin-top: 20px;
+  }
+  .ds-card {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 16px;
+  }
+  .ds-card .ds-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .ds-card .ds-num { font-size: 26px; font-weight: 700; }
+  .ds-card .ds-label { font-size: 12px; color: var(--text-muted); }
+  .ds-card .ds-detail { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+
+  /* Tab system */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 10px 20px; cursor: pointer; border: none; background: transparent;
+    color: var(--text-muted); font-size: 14px; border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text-primary); }
+  .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 32px; color: var(--text-muted); font-size: 12px;
+    border-top: 1px solid var(--border-color); margin-top: 48px;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 24px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .arch-row { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Hero Header ===== -->
+<header class="hero">
+  <h1>CampusDeal 校园二手交易 C2C 平台</h1>
+  <p class="subtitle">《企业级项目实训》课程核心载体项目 &mdash; 基于 Spring Boot + Vue3 的全栈实战项目，覆盖需求分析到商业路演完整生命周期</p>
+  <div class="tags">
+    <span class="tag">Spring Boot 3.x</span>
+    <span class="tag">Vue 3 + Vite</span>
+    <span class="tag">MySQL 8 + Redis</span>
+    <span class="tag">JWT + Spring Security</span>
+    <span class="tag">RESTful API</span>
+    <span class="tag">Docker部署</span>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ===== Stats Overview ===== -->
+<div class="stats-bar">
+  <div class="stat-card"><div class="num" style="color:#3b82f6">6</div><div class="label">功能模块</div></div>
+  <div class="stat-card"><div class="num" style="color:#10b981">42+</div><div class="label">API 接口</div></div>
+  <div class="stat-card"><div class="num" style="color:#f59e0b">18</div><div class="label">数据表</div></div>
+  <div class="stat-card"><div class="num" style="color:#8b5cf6">13</div><div class="label">前端页面</div></div>
+  <div class="stat-card"><div class="num" style="color:#ef4444">80+</div><div class="label">实训步骤文档</div></div>
+  <div class="stat-card"><div class="num" style="color:#06b6d4">48</div><div class="label">课程学时</div></div>
+</div>
+
+<!-- ===== Section 1: System Architecture ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(59,130,246,0.15);color:#3b82f6;">&#9670;</span> 系统技术架构</h2>
+  <p class="section-desc">前后端分离架构，Spring Boot 提供 RESTful 服务，Vue3 构建单页应用</p>
+  
+  <div class="arch-diagram">
+    <!-- Layer: Client -->
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-align:center;">客户端层 (Client)</div>
+    <div class="arch-row">
+      <div class="arch-box" style="border-color:#3b82f6;background:rgba(59,130,246,0.04);">
+        <div class="ab-title" style="color:#60a5fa;">PC Web 前端</div>
+        <div class="ab-desc">Vue 3 SPA / 学生端</div>
+      </div>
+      <div class="arch-box" style="border-color:#8b5cf6;background:rgba(139,92,246,0.04);">
+        <div class="ab-title" style="color:#a78bfa;">管理后台</div>
+        <div class="ab-desc">Element Plus / 教师端</div>
+      </div>
+      <div class="arch-box" style="border-color:#10b981;background:rgba(16,185,129,0.04);">
+        <div class="ab-title" style="color:#34d399;">移动端 H5</div>
+        <div class="ab-desc">响应式适配</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#8595;</div>
+    
+    <!-- Layer: Gateway -->
+    <div class="arch-row">
+      <div class="arch-box" style="border-color:#06b6d4;background:rgba(6,182,212,0.04);min-width:320px;">
+        <div class="ab-title" style="color:#22d3ee;">Nginx 反向代理 + 静态资源</div>
+        <div class="ab-desc">HTTPS / Gzip / CORS / 缓存策略 / 负载均衡</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#8595;</div>
+    
+    <!-- Layer: Backend -->
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-align:center;">后端服务层 (Spring Boot)</div>
+    <div class="arch-row" style="gap:8px;">
+      <div class="arch-box" style="border-color:#f97316;background:rgba(249,115,22,0.04);min-width:120px;">
+        <div class="ab-title" style="color:#fb923c;">Controller</div>
+        <div class="ab-desc">RESTful API</div>
+      </div>
+      <div class="arch-box" style="border-color:#f59e0b;background:rgba(245,158,11,0.04);min-width:120px;">
+        <div class="ab-title" style="color:#fbbf24;">Service</div>
+        <div class="ab-desc">业务逻辑</div>
+      </div>
+      <div class="arch-box" style="border-color:#ef4444;background:rgba(239,68,68,0.04);min-width:120px;">
+        <div class="ab-title" style="color:#f87171;">Mapper</div>
+        <div class="ab-desc">MyBatis-Plus</div>
+      </div>
+      <div class="arch-box" style="border-color:#8b5cf6;background:rgba(139,92,246,0.04);min-width:120px;">
+        <div class="ab-title" style="color:#a78bfa;">Security</div>
+        <div class="ab-desc">JWT 认证</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#8595;</div>
+    
+    <!-- Layer: Data -->
+    <div class="arch-row" style="gap:10px;">
+      <div class="arch-box" style="border-color:#3b82f6;background:rgba(59,130,246,0.04);">
+        <div class="ab-title" style="color:#60a5fa;">MySQL 8.0</div>
+        <div class="ab-desc">主数据库 (18表)</div>
+      </div>
+      <div class="arch-box" style="border-color:#ef4444;background:rgba(239,68,68,0.04);">
+        <div class="ab-title" style="color:#f87171;">Redis 7</div>
+        <div class="ab-desc">缓存/会话/限流</div>
+      </div>
+      <div class="arch-box" style="border-color:#10b981;background:rgba(16,185,129,0.04);">
+        <div class="ab-title" style="color:#34d399;">MinIO / Local</div>
+        <div class="ab-desc">文件存储 (图片)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 2: Feature Modules ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(16,185,129,0.15);color:#10b981;">&#9783;</span> 功能模块规划（6大模块）</h2>
+  <p class="section-desc">按用户角色和业务领域划分，每个模块包含前端页面 + 后端接口 + 实训步骤文档</p>
+
+  <div class="tabs" id="featTabs">
+    <button class="tab-btn active" data-tab="tab-all">全部模块</button>
+    <button class="tab-btn" data-tab="tab-user">用户系统</button>
+    <button class="tab-btn" data-tab="tab-product">商品交易</button>
+    <button class="tab-btn" data-tab="tab-order">订单支付</button>
+    <button class="tab-btn" data-tab="tab-msg">消息互动</button>
+    <button class="tab-btn" data-tab="tab-admin">后台管理</button>
+    <button class="tab-btn" data-tab="tab-inno">创业元素</button>
+  </div>
+
+  <!-- Tab: All -->
+  <div class="tab-panel active" id="tab-all">
+    <div class="feature-grid">
+
+      <!-- M1: User Module -->
+      <div class="feature-card c-m1">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M1 用户系统</span>
+          <span class="fc-badge">3页面 / 6接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>注册登录（学号认证 / 手机号 / 微信授权）</li>
+            <li>个人中心（头像昵称修改、收货地址管理）</li>
+            <li>我的收藏（商品收藏列表、取消收藏）</li>
+            <li>信用体系（实名认证、信用评分展示）</li>
+            <li>安全设置（密码修改、绑定手机、注销账号）</li>
+            <li>JWT Token 无状态认证 + RefreshToken 双 token 机制</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M2: Product Module -->
+      <div class="feature-card c-m2">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M2 商品管理</span>
+          <span class="fc-badge">4页面 / 10接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>商品发布（图片多张上传、分类选择、描述编辑器）</li>
+            <li>商品详情（大图预览、卖家信息、相似推荐）</li>
+            <li>商品列表（分类筛选、关键字搜索、价格排序）</li>
+            <li>我的发布（上架/下架/编辑/删除商品）</li>
+            <li>SPU/SKU 商品模型设计（规格参数+库存）</li>
+            <li>商品状态机：草稿→审核中→已上架→已售出/已下架</li>
+            <li>Elasticsearch 全文检索（可选增强）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M3: Order Module -->
+      <div class="feature-card c-m3">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M3 订单交易</span>
+          <span class="fc-badge">4页面 / 12接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>立即购买 / 加入购物车（数量选择）</li>
+            <li>订单确认页（地址选择、优惠券抵扣、金额计算）</li>
+            <li>订单详情（物流跟踪、交易状态时间线）</li>
+            <li>我的订单（全部/待付款/待发货/已完成，Tab 切换）</li>
+            <li>订单状态机：待付款→待发货→待收货→已完成/已取消</li>
+            <li>超时自动取消（Redis 过期事件监听）</li>
+            <li>并发库存扣减（Redis Lua 脚本 / 数据库乐观锁）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M4: Payment Module -->
+      <div class="feature-card c-m4">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M4 支付系统</span>
+          <span class="fc-badge">2页面 / 8接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>支付宝沙箱支付接入（沙箱环境教学用）</li>
+            <li>微信支付 H5 接入（统一下单 + 回调通知）</li>
+            <li>支付回调处理（异步通知验签 + 幂等性保障）</li>
+            <li>退款流程（部分退款 / 全额退款）</li>
+            <li>交易流水记录（每笔操作可追溯）</li>
+            <li>支付状态轮询 + WebSocket 推送双通道</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M5: Message Module -->
+      <div class="feature-card c-m5">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M5 消息互动</span>
+          <span class="fc-badge">3页面 / 6接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>即时聊天 IM（WebSocket 双向通信）</li>
+            <li>消息列表（最新消息预览、未读数角标）</li>
+            <li>聊天界面（文字/图片发送、历史消息分页加载）</li>
+            <li>商品评价（买家评价、卖家回复、星级打分）</li>
+            <li>系统通知（订单状态变更、平台公告推送）</li>
+            <li>敏感词过滤（正则匹配 + 关键词库）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M6: Admin Module -->
+      <div class="feature-card c-m6">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M6 后台管理</span>
+          <span class="fc-badge">5页面 / 10接口</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>数据看板（用户/商品/订单/交易额 实时统计图表 ECharts）</li>
+            <li>用户管理（列表/搜索/禁用/解封/角色分配）</li>
+            <li>商品审核（违规商品下架、分类管理、举报处理）</li>
+            <li>订单管理（查看详情、异常订单干预）</li>
+            <li>内容管理（轮播图配置、公告发布、分类维护）</li>
+            <li>系统设置（参数配置、操作日志审计）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M7: Innovation Module -->
+      <div class="feature-card" style="--mc:#ec4899;">
+        <div class="fc-header">
+          <div class="fc-dot" style="background:var(--mc)"></div>
+          <span class="fc-title">M7 创业融合元素</span>
+          <span class="fc-badge">4页面 / 课程特色</span>
+        </div>
+        <div class="fc-body">
+          <ul class="fc-list">
+            <li>商业模式画布（九宫格在线填写工具）</li>
+            <li>盈利分析面板（交易抽成统计、广告位定价模拟）</li>
+            <li>推广裂变工具（拼团/砍价/邀请码活动设计器）</li>
+            <li>数据可视化驾驶舱（用户增长漏斗 + GMV 趋势图）</li>
+            <li>竞品分析矩阵（功能对比表格生成器）</li>
+            <li>路演数据导出（一键生成 BP 所需核心数据报表）</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Other tabs show same content filtered - simplified for this demo -->
+  <div class="tab-panel" id="tab-user">
+    <p style="color:var(--text-muted);padding:20px;text-align:center;">请切换到「全部模块」查看所有模块详情，或使用下方模块总览表。</p>
+  </div>
+  <div class="tab-panel" id="tab-product"></div>
+  <div class="tab-panel" id="tab-order"></div>
+  <div class="tab-panel" id="tab-msg"></div>
+  <div class="tab-panel" id="tab-admin"></div>
+  <div class="tab-panel" id="tab-inno"></div>
+</section>
+
+<!-- ===== Section 3: Module Summary Table ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">&#9783;</span> 模块总览表（文档量统计）</h2>
+  <p class="section-desc">每个模块对应的前端页面、后端接口、数据库表、实训步骤文档数量一览</p>
+
+  <div class="module-table-wrap">
+    <table class="module-table">
+      <thead>
+        <tr>
+          <th>模块</th><th>前端页面</th><th>后端接口</th><th>数据表</th>
+          <th>实训任务数</th><th>步骤文档数</th><th>关联创业元素</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="m-badge" style="background:#3b82f6;">M1</span> 用户系统</td>
+          <td>3 页面<br><small>注册登录、个人中心、收藏夹</small></td>
+          <td>6 个<br><small>登录/注册/信息/地址/收藏/安全</small></td>
+          <td>3 张<br><small>user/user_address/user_favorite</small></td>
+          <td>2 个任务</td>
+          <td>~12 步骤</td>
+          <td>用户画像分析工具</td>
+        </tr>
+        <tr>
+          <td><span class="m-badge" style="background:#10b981;">M2</span> 商品管理</td>
+          <td>4 页面<br><small>发布、详情、列表、我的发布</small></td>
+          <td>10 个<br><small>CRUD/上下架/搜索/分类/推荐</small></td>
+          <td>4 张<br><small>product/category/product_image/product_spec</small></td>
+          <td>3 个任务</td>
+          <td>~22 步骤</td>
+          <td>竞品分析报告模板</td>
+        </tr>
+        <tr>
+          <td><span class="m-badge" style="background:#f59e0b;">M3</span> 订单交易</td>
+          <td>4 页面<br><small>确认页、详情、列表、购物车</small></td>
+          <td>12 个<br><small>创建/取消/确认收货/购物车/并发</small></td>
+          <td>4 张<br><small>order/order_item/cart/order_log</small></td>
+          <td>2 个任务</td>
+          <td>~16 步骤</td>
+          <td>转化漏斗分析图</td>
+        </tr>
+        <tr>
+          <td><span class="m-badge" style="background:#8b5cf6;">M4</span> 支付系统</td>
+          <td>2 页面<br><small>收银台、支付结果</small></td>
+          <td>8 个<br><small>创建/回调/查询/退款/流水</small></td>
+          <td>3 张<br><small>payment/payment_refund/payment_flow</small></td>
+          <td>2 个任务</td>
+          <td>~14 步骤</td>
+          <td>盈利模型计算器</td>
+        </tr>
+        <tr>
+          <td><span class="m-badge" style="background:#ef4444;">M5</span> 消息互动</td>
+          <td>3 页面<br><small>消息列表、聊天、评价</small></td>
+          <td>6 个<br><small>IM/消息/评价/通知</small></td>
+          <td>3 张<br><small>message/message_record/review</small></td>
+          <td>1 个任务</td>
+          <td>~8 步骤</td>
+          <td>用户增长漏斗模拟</td>
+        </tr>
+        <tr>
+          <td><span class="m-badge" style="background:#f97316;">M6</span> 后台管理</td>
+          <td>5 页面<br><small>看板/用户/商品/订单/设置</small></td>
+          <td>10 个<br><small>统计/审核/管理/日志</small></td>
+          <td>1 张<br><small>sys_log</small></td>
+          <td>2 个任务</td>
+          <td>~10 步骤</td>
+          <td>数据分析报告生成</td>
+        </tr>
+        <tr style="background:rgba(236,72,153,0.03);">
+          <td><span class="m-badge" style="background:#ec4899;">M7</span> 创业融合</td>
+          <td>4 页面<br><small>画布/盈利/推广/数据中心</small></td>
+          <td>4 个<br><small>画布保存/数据导出/活动创建</small></td>
+          <td>2 张<br><small>business_canvas/promotion_activity</small></td>
+          <td>1 个任务</td>
+          <td>~6 步骤</td>
+          <td>路演材料数据源</td>
+        </tr>
+        <tr style="font-weight:600;background:rgba(59,130,246,0.04);">
+          <td colspan="2" style="color:var(--accent-blue);">合计总计</td>
+          <td><strong>25 个页面</strong></td>
+          <td><strong>56 个接口</strong></td>
+          <td><strong>20 张数据表</strong></td>
+          <td><strong>13 个任务</strong></td>
+          <td><strong>~88 个实训步骤</strong></td>
+          <td>全覆盖</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== Section 4: Project File Structure ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">&#9776;</span> 项目文档结构树</h2>
+  <p class="section-desc">前后端项目完整目录结构，标注每种文件的用途和数量。AI 可按此逐一实现每个文件。</p>
+
+  <div class="tabs" id="structTabs">
+    <button class="tab-btn active" onclick="switchTab(event,'structTabs','st-all')">完整结构</button>
+    <button class="tab-btn" onclick="switchTab(event,'structTabs','st-front')">前端项目 (Vue3)</button>
+    <button class="tab-btn" onclick="switchTab(event,'structTabs','st-back')">后端项目 (Spring Boot)</button>
+    <button class="tab-btn" onclick="switchTab(event,'structTabs','st-db')">数据库 (SQL)</button>
+    <button class="tab-btn" onclick="switchTab(event,'structTabs','st-doc')">实训文档 (Markdown)</button>
+  </div>
+
+  <div class="tab-panel active" id="st-all">
+    <div class="tree-container">
+<pre class="tree">
+<span class="tree-root">CampusDeal/</span>                          <span class="tree-comment">&lt;!-- 项目根目录 --&gt;</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">backend/</span>                    <span class="tree-comment"># Spring Boot 后端项目</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">src/main/java/com/campusdeal/</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">config/</span>               <span class="tree-count">6 文件</span> <span class="tree-comment">(Security/WebMvc/Redis/Swagger/CORS/File)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">SecurityConfig.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">WebMvcConfig.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">RedisConfig.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">SwaggerConfig.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">CorsConfig.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">MinioConfig.java</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">controller/</span>           <span class="tree-count">7 文件</span> <span class="tree-comment">(RESTful API 入口)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">AuthController.java</span>         <span class="tree-comment"># 登录/注册/JWT</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">UserController.java</span>         <span class="tree-comment"># 用户CRUD/地址/收藏</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ProductController.java</span>     <span class="tree-comment"># 商品发布/上下架/搜索</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">OrderController.java</span>       <span class="tree-comment"># 订单/购物车/确认收货</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PaymentController.java</span>    <span class="tree-comment"># 支付宝/微信/回调/退款</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">MessageController.java</span>     <span class="tree-comment"># IM聊天/评价/通知</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Admincontroller.java</span>       <span class="tree-comment"># 后台统计/审核/管理</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">service/</span>              <span class="tree-count">14 文件</span> <span class="tree-comment">(接口+实现类)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">impl/</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">AuthService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">UserService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">ProductService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">OrderService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">PaymentService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">MessageService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">AdminService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">FileUploadService.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">WebSocketService.java</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">mapper/</span>               <span class="tree-count">8 文件</span> <span class="tree-comment">(MyBatis-Plus Mapper)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">UserMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ProductMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">OrderMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">CartMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PaymentMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">MessageMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ReviewMapper.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">CategoryMapper.java</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">entity/</span>               <span class="tree-count">20 文件</span> <span class="tree-comment">(数据库实体类)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">User.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">UserAddress.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">UserFavorite.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Product.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ProductImage.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ProductSpec.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Category.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Cart.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Order.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">OrderItem.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">OrderLog.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Payment.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PaymentRefund.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PaymentFlow.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Message.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">MessageRecord.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Review.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Notice.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">Banner.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">BusinessCanvas.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PromotionActivity.java</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">vo/</span>                   <span class="tree-count">~15 文件</span> <span class="tree-comment">(请求/响应DTO)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">request/</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">LoginRequest.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">RegisterRequest.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">PublishProductRequest.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">CreateOrderRequest.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">... 等</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">response/</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">Result.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">UserInfoVO.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">ProductDetailVO.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">OrderVO.java</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-java">PageResult.java</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">common/</span>               <span class="tree-count">5 文件</span> <span class="tree-comment">(公共组件)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">ResultCode.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">GlobalExceptionHandler.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">BusinessException.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">JwtUtil.java</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-java">PageUtils.java</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">resources/</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-yml">application.yml</span>             <span class="tree-comment"># 主配置</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-yml">application-dev.yml</span>          <span class="tree-comment"># 开发环境</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-yml">application-prod.yml</span>         <span class="tree-comment"># 生产环境</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">mapper/</span>                  <span class="tree-count">5 XML 文件</span> <span class="tree-comment">(复杂SQL映射)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file">ProductMapper.xml</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file">OrderMapper.xml</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file">StatisticsMapper.xml</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">sql/</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file sql">schema.sql</span>                 <span class="tree-comment"># 建库建表 DDL</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file sql">data.sql</span>                   <span class="tree-comment"># 初始化测试数据</span>
+
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">frontend/</span>                   <span class="tree-comment"># Vue3 前端项目</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file-json">package.json</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file-js">vite.config.js</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">src/</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-vue">App.vue</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-js">main.js</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">router/</span>                <span class="tree-count">3 文件</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">index.js</span>                   <span class="tree-comment"># 路由总入口</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">modules/</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">authRoutes.js</span>              <span class="tree-comment"># 登录/注册路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">homeRoutes.js</span>              <span class="tree-comment"># 首页路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">productRoutes.js</span>           <span class="tree-comment"># 商品相关路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">orderRoutes.js</span>             <span class="tree-comment"># 订单相关路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">userRoutes.js</span>              <span class="tree-comment"># 用户中心路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">chatRoutes.js</span>              <span class="tree-comment"># 聊天/消息路由</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-js">adminRoutes.js</span>             <span class="tree-comment"># 后台管理路由</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">views/</span>                <span class="tree-count">25 页面</span> <span class="tree-comment">(&#9733; 核心产出)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">auth/</span>                  <span class="tree-count">2 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">LoginView.vue</span>             <span class="tree-comment"># 登录页 (账号/手机/扫码)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">RegisterView.vue</span>          <span class="tree-comment"># 注册页 (学号认证)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">home/</span>                  <span class="tree-count">1 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">HomeView.vue</span>              <span class="tree-comment"># 首页 (搜索/Banner/推荐/分类入口)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">product/</span>              <span class="tree-count">4 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductListView.vue</span>        <span class="tree-comment"># 商品列表 (筛选/搜索/排序/分页)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductDetailView.vue</span>      <span class="tree-comment"># 商品详情 (大图/规格/卖家/推荐)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductPublishView.vue</span>   <span class="tree-comment"># 发布商品 (富文本/多图上传)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">MyProductsView.vue</span>        <span class="tree-comment"># 我的发布 (管理列表)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">order/</span>                <span class="tree-count">4 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CartView.vue</span>              <span class="tree-comment"># 购物车</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">OrderConfirmView.vue</span>     <span class="tree-comment"># 订单确认 (地址/优惠/结算)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">OrderDetailView.vue</span>        <span class="tree-comment"># 订单详情 (状态线/物流)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">OrderListView.vue</span>          <span class="tree-comment"># 订单列表 (Tab状态筛选)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">payment/</span>              <span class="tree-count">2 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CashierView.vue</span>           <span class="tree-comment"># 收银台 (选支付方式)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">PayResultView.vue</span>         <span class="tree-comment"># 支付结果页</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">user/</span>                 <span class="tree-count">3 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProfileView.vue</span>           <span class="tree-comment"># 个人中心 (信息展示/编辑入口)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">AddressManageView.vue</span>    <span class="tree-comment"># 地址管理 (增删改查)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">FavoriteView.vue</span>          <span class="tree-comment"># 收藏夹</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">chat/</span>                 <span class="tree-count">3 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">MessageListView.vue</span>       <span class="tree-comment"># 消息列表</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ChatView.vue</span>              <span class="tree-comment"># 聊天窗口 (WS实时通信)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ReviewView.vue</span>            <span class="tree-comment"># 评价页</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">admin/</span>                <span class="tree-count">5 页面</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">DashboardView.vue</span>       <span class="tree-comment"># 数据看板 (ECharts图表)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">UserManageView.vue</span>        <span class="tree-comment"># 用户管理</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductAuditView.vue</span>     <span class="tree-comment"># 商品审核</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">OrderManageView.vue</span>       <span class="tree-comment"># 订单管理</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">SystemSettingsView.vue</span>    <span class="tree-comment"># 系统设置</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">innovation/</span>           <span class="tree-count">4 页面</span> <span class="tree-comment">(创业特色)</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CanvasView.vue</span>           <span class="tree-comment"># 商业模式画布</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProfitAnalysisView.vue</span>  <span class="tree-comment"># 盈利分析</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">PromotionView.vue</span>        <span class="tree-comment"># 推广活动设计</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">DataCenterView.vue</span>       <span class="tree-comment"># 数据驾驶舱</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">components/</span>           <span class="tree-count">~20 组件</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">layout/</span>              <span class="tree-count">4 组件</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">AppLayout.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">HeaderNav.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">SidebarMenu.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">FooterBar.vue</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">product/</span>            <span class="tree-count">5 组件</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductCard.vue</span>           <span class="tree-comment"># 商品卡片</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ProductGallery.vue</span>        <span class="tree-comment"># 图片画廊</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">SearchFilter.vue</span>          <span class="tree-comment"># 搜索过滤栏</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CategoryTag.vue</span>          <span class="tree-comment"># 分类标签</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">PriceInput.vue</span>           <span class="tree-comment"># 价格输入</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">order/</span>              <span class="tree-count">4 组件</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CartItem.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">OrderTimeline.vue</span>         <span class="tree-comment"># 订单状态时间线</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">AddressSelector.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">CouponPicker.vue</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">common/</span>             <span class="tree-count">7 组件</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">ImageUploader.vue</span>        <span class="tree-comment"># 图片上传</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">RichTextEditor.vue</span>      <span class="tree-comment"># 富文本编辑器</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">EmptyState.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">LoadingSkeleton.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">Pagination.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">UserAvatar.vue</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-vue">StarRating.vue</span>             <span class="tree-comment"># 星级评分</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">stores/</span>               <span class="tree-count">5 文件</span> <span class="tree-comment">(Pinia状态仓库)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">useUserStore.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">useCartStore.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">useProductStore.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">useChatStore.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">useAppStore.js</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">api/</span>                  <span class="tree-count">8 文件</span> <span class="tree-comment">(Axios封装)</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">request.js</span>               <span class="tree-comment"># Axios实例/拦截器</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">authApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">productApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">orderApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">paymentApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">messageApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">adminApi.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">innovationApi.js</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">styles/</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file">variables.scss</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file">global.scss</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">utils/</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">format.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">storage.js</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-file tree-file-js">validate.js</span>
+
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">docs/</span>                       <span class="tree-comment"># 实训步骤文档 (Markdown)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">training-steps/</span>           <span class="tree-count">~88 个 MD 文件</span> <span class="tree-comment">&#9733; 学生实训核心!</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M1-demand-analysis/</span>    <span class="tree-count">12 文件</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T1-campus-research/</span>   <span class="tree-count">6 步骤</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file-md">step01-intro.md</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file md">step02-survey-method.md</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file md">step03-questionnaire-design.md</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file md">step04-competitor-analysis.md</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file md">step05-requirement-doc.md</span>
+<span class="tree-icon">        &#9492;</span> <span class="tree-file tree-file md">step06-summary-checkpoint.md</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T2-prototype-design/</span>  <span class="tree-count">6 步骤</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M2-frontend-dev/</span>       <span class="tree-count">22 文件</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T1-axure-to-frontend/</span>  <span class="tree-count">8 步骤</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T2-product-list-page/</span><span class="tree-count">7 步骤</span> <span class="tree-comment">&#9733; 核心</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T3-profile-page/</span>     <span class="tree-count">7 步骤</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M3-backend-dev/</span>         <span class="tree-count">16 文件</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T1-backend-architecture/</span><span class="tree-count">8 步骤</span>
+<span class="tree-icon">      &#9492;</span> <span class="tree-folder">T2-payment-api/</span>      <span class="tree-count">8 步骤</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M4-business-model/</span>      <span class="tree-count">10 文件</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M5-testing-delivery/</span>    <span class="tree-count">10 文件</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-folder">M6-pitch-launch/</span>        <span class="tree-count">10 文件</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">api-docs/</span>                <span class="tree-comment"># 接口文档</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-md">api-reference.md</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">db-design/</span>                <span class="tree-comment"># 数据库设计文档</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-md">er-diagram.md</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-md">index-design.md</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">deployment/</span>              <span class="tree-comment"># 部署文档</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file-md">docker-deploy.md</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file tree-file md">nginx-config.md</span>
+
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">docker/</span>                      <span class="tree-comment"># 容器化配置</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file-yml">docker-compose.yml</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">mysql/</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file">init.sql</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">nginx/</span>
+<span class="tree-icon">    &#9492;</span> <span class="tree-file">default.conf</span>
+</pre>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="st-front">
+    <div class="tree-container"><pre class="tree" style="font-size:12.5px;">
+<span class="tree-root">frontend/src/</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-file tree-file-vue">App.vue</span> <span class="tree-file tree-file-js">main.js</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">router/modules/</span> <span class="tree-count">8 文件</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">views/</span> <span class="tree-count">25 页面</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">auth/</span> <span class="tree-count">LoginView / RegisterView</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">home/</span> <span class="tree-count">HomeView</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">product/</span> <span class="tree-count">List / Detail / Publish / MyProducts</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">order/</span> <span class="tree-count">Cart / Confirm / Detail / List</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">payment/</span> <span class="tree-count">Cashier / PayResult</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">user/</span> <span class="tree-count">Profile / Address / Favorite</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">chat/</span> <span class="tree-count">MessageList / Chat / Review</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">admin/</span> <span class="tree-count">Dashboard / Users / Products / Orders / Settings</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-folder">innovation/</span> <span class="tree-count">Canvas / Profit / Promotion / DataCenter</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">components/</span> <span class="tree-count">~20 组件</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">stores/</span> <span class="tree-count">5 Store</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">api/</span> <span class="tree-count">8 Api模块</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">styles/</span> <span class="tree-count">SCSS变量</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">utils/</span> <span class="tree-count">工具函数</span>
+    </pre></div>
+  </div>
+
+  <div class="tab-panel" id="st-back">
+    <div class="tree-container"><pre class="tree" style="font-size:12.5px;">
+<span class="tree-root">backend/src/main/java/com/campusdeal/</span>
+<span class="tree-icon">&#9492;</span> CampusDealApplication.java          <span class="tree-comment"># 启动类</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">common/</span> <span class="tree-count">5 文件</span> <span class="tree-comment">(Result/Exception/Jwt/PageUtils)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">config/</span> <span class="tree-count">6 文件</span> <span class="tree-comment">(Security/WebMvc/Redis/Swagger/CORS/MinIO)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">entity/</span> <span class="tree-count">20 实体类</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">mapper/</span> <span class="tree-count">8 Mapper接口 + 5 XML</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">service/</span> <span class="tree-count">7 接口 + 9 实现</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">controller/</span> <span class="tree-count">7 Controller (56个API)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">vo/request/</span> <span class="tree-count">~8 请求DTO</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">vo/response/</span> <span class="tree-count">~7 响应DTO</span>
+<span class="tree-root">backend/src/main/resources/</span>
+<span class="tree-icon">&#9492;</span> application.yml / application-dev.yml / application-prod.yml
+<span class="tree-icon">&#9492;</span> mapper/*.xml (5个SQL映射)
+<span class="tree-icon">&#9492;</span> sql/schema.sql + data.sql
+    </pre></div>
+  </div>
+
+  <div class="tab-panel" id="st-db">
+    <div class="tree-container"><pre class="tree" style="font-size:12.5px;">
+<span class="tree-root">database campus_deal (20 tables)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">用户域 (3表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">sys_user</span>              <span class="tree-comment">-- ID/手机/昵称/头像/密码/角色/信用分/状态/创建时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">user_address</span>          <span class="tree-comment">-- ID/用户ID/收货人/电话/省市区/详细地址/是否默认</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">user_favorite</span>          <span class="tree-comment">-- ID/用户ID/商品ID/创建时间</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">商品域 (4表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">category</span>              <span class="tree-comment">-- ID/父级ID/分类名/图标/排序/状态</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">product</span>               <span class="tree-comment">-- ID/卖家ID/分类ID/标题/描述/价格/原价/状态/浏览量</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">product_image</span>         <span class="tree-comment">-- ID/商品ID/图片URL/排序/是否主图</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">product_spec</span>           <span class="tree-comment">-- ID/商品ID/规格名/规格值/库存</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">交易域 (4表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">cart</span>                  <span class="tree-comment">-- ID/用户ID/商品ID/数量/选中状态/创建时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">`order`</span>                <span class="tree-comment">-- ID/订单号/买家ID/卖家ID/总金额/状态/支付方式</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">order_item</span>            <span class="tree-comment">-- ID/订单ID/商品ID/单价/数量/小计</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">order_log</span>             <span class="tree-comment">-- ID/订单ID/操作/操作人/备注/时间</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">支付域 (3表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">payment</span>              <span class="tree-comment">-- ID/订单ID/支付渠道/交易号/金额/状态/支付时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">payment_refund</span>        <span class="tree-comment">-- ID/支付ID/退款金额/原因/状态/申请时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">payment_flow</span>          <span class="tree-comment">-- ID/支付ID/阶段/状态变更/时间戳</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">社交域 (3表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">message</span>              <span class="tree-comment">-- ID/发送者/接收者/类型(1私聊2系统)/最后消息/未读数</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">message_record</span>       <span class="tree-comment">-- ID/消息会话ID/发送者/内容/类型(文字/图片)/时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">review</span>               <span class="tree-comment">-- ID/订单ID/买家ID/卖家ID/评分/内容/回复/时间</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">系统域 (3表)</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">notice</span>               <span class="tree-comment">-- ID/标题/内容/目标用户ID/类型/已读/时间</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">banner</span>               <span class="tree-comment">-- ID/标题/图片URL/跳转链接/排序/状态</span>
+<span class="tree-icon">  &#9492;</span> <span class="tree-file tree-file sql">sys_log</span>              <span class="tree-comment">-- ID/操作人/模块/操作类型/IP/详情/时间</span>
+    </pre></div>
+  </div>
+
+  <div class="tab-panel" id="st-doc">
+    <div class="tree-container"><pre class="tree" style="font-size:12.5px;">
+<span class="tree-root">docs/training-steps/</span>                    <span class="tree-comment"># 实训步骤文档 (~88个MD)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M1-demand-analysis/</span>           <span class="tree-count">12 步骤 | 2 任务</span>
+<span class="tree-icon">  &#9492;</span> T1-campus-research/ step01~06
+<span class="tree-icon">  &#9492;</span> T2-prototype-design/ step01~06
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M2-frontend-dev/</span>                <span class="tree-count">22 步骤 | 3 任务</span> <span class="tree-comment">&#9733; 最重要</span>
+<span class="tree-icon">  &#9492;</span> T1-axure-to-frontend/ step01~08       <span class="tree-comment">(Axure转前端)</span>
+<span class="tree-icon">  &#9492;</span> T2-product-list-page/ step01~07      <span class="tree-comment">&#9733; 商品列表开发</span>
+<span class="tree-icon">  &#9492;</span> T3-profile-page/ step01~07            <span class="tree-comment">(个人中心开发)</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M3-backend-dev/</span>                 <span class="tree-count">16 步骤 | 2 任务</span>
+<span class="tree-icon">  &#9492;</span> T1-backend-architecture/ step01~08     <span class="tree-comment">(架构设计+DB)</span>
+<span class="tree-icon">  &#9492;</span> T2-payment-api/ step01~08            <span class="tree-comment">&#9733; 支付接口开发</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M4-business-model/</span>              <span class="tree-count">10 步骤 | 2 任务</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M5-testing-delivery/</span>            <span class="tree-count">10 步骤 | 2 任务</span>
+<span class="tree-icon">&#9492;</span> <span class="tree-folder">M6-pitch-launch/</span>                <span class="tree-count">10 步骤 | 3 任务</span>
+<span class="tree-comment">
+每个步骤MD文件标准格式:
+  # 标题
+  ## 学习目标 (可勾选清单)
+  ## 前置条件
+  ## 操作步骤 (图文并茂)
+  ## 代码示例 (语法高亮)
+  ## 常见错误排查表
+  ## 最佳实践提示
+  ## 阶段检查点 (验收清单)
+  ## 相关资源下载
+  ## 随堂练习题
+</span>
+    </pre></div>
+  </div>
+</section>
+
+<!-- ===== Section 5: Core APIs ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(239,68,68,0.15);color:#ef4444;">&#9776;</span> 核心API接口清单（部分示例）</h2>
+  <p class="section-desc">RESTful 风格，统一返回 Result&lt;T&gt; 格式，JWT Bearer Token 认证</p>
+
+  <div class="tabs" id="apiTabs">
+    <button class="tab-btn active" onclick="switchTab(event,'apiTabs','api-auth')">Auth 认证</button>
+    <button class="tab-btn" onclick="switchTab(event,'apiTabs','api-product')">Product 商品</button>
+    <button class="tab-btn" onclick="switchTab(event,'apiTabs','api-order')">Order 订单</button>
+    <button class="tab-btn" onclick="switchTab(event,'apiTabs','api-pay')">Payment 支付</button>
+    <button class="tab-btn" onclick="switchTab(event,'apiTabs','api-chat')">Chat 消息</button>
+    <button class="tab-btn" onclick="switchTab(event,'apiTabs','api-admin')">Admin 管理</button>
+  </div>
+
+  <div class="tab-panel active" id="api-auth">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th><th>认证</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/auth/login</td><td>账号密码登录</td><td>No</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/auth/register</td><td>学生注册(学号认证)</td><td>No</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/auth/refresh</td><td>刷新Token</td><td>Yes</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/auth/sms-code</td><td>获取短信验证码</td><td>No</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/auth/captcha</td><td>图形验证码</td><td>No</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/auth/logout</td><td>登出(黑名单)</td><td>Yes</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="tab-panel" id="api-product">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/products</td><td>商品列表(分页/筛选/搜索/排序)</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/products/{id}</td><td>商品详情</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/products</td><td>发布商品(含图片)</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/products/{id}</td><td>编辑商品</td></tr>
+        <tr><td><span class="api-method method-del">DELETE</span></td><td>/api/products/{id}</td><td>删除商品</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/products/{id}/status</td><td>上架/下架</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/products/{id}/favorite</td><td>收藏/取消收藏</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/categories</td><td>分类树</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/products/recommend</td><td>个性化推荐</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/products/{id}/images</td><td>上传商品图片</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="tab-panel" id="api-order">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/cart</td><td>购物车列表</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/cart/items</td><td>加入购物车</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/cart/items/{id}</td><td>更新数量</td></tr>
+        <tr><td><span class="api-method method-del">DELETE</span></td><td>/api/cart/items/{id}</td><td>移除购物车项</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/orders</td><td>创建订单</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/orders</td><td>订单列表(状态筛选)</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/orders/{id}</td><td>订单详情(含状态线)</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/orders/{id}/cancel</td><td>取消订单</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/orders/{id}/receive</td><td>确认收货</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/orders/{id}/log</td><td>订单操作日志</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="tab-panel" id="api-pay">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/payments/create</td><td>发起支付(支付宝/微信)</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/payments/alipay/callback</td><td>支付宝异步通知</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/payments/wxpay/callback</td><td>微信支付回调</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/payments/{orderId}/status</td><td>查询支付状态</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/payments/{id}/refund</td><td>申请退款</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/payments/{id}/flow</td><td>支付流水明细</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="tab-panel" id="api-chat">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/messages/conversations</td><td>会话列表</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/messages/{conversationId}/records</td><td>聊天记录(分页)</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/messages/send</td><td>发送消息</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/messages/{id}/read</td><td>标记已读</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/reviews</td><td>提交评价</td></tr>
+        <tr><td><span class="api-method method-post">POST</span></td><td>/api/reviews/{id}/reply</td><td>卖家回复评价</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="tab-panel" id="api-admin">
+    <div style="overflow-x:auto;"><table class="api-table">
+      <thead><tr><th>Method</th><th>Path</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/stats/dashboard</td><td>看板统计数据</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/users</td><td>用户列表(分页搜索)</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/admin/users/{id}/status</td><td>禁用/解封用户</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/products/pending</td><td>待审核商品</td></tr>
+        <tr><td><span class="api-method method-put">PUT</span></td><td>/api/admin/products/{id}/audit</td><td>审核通过/拒绝</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/orders</td><td>全部订单列表</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/notices</td><td>公告列表CRUD</td></tr>
+        <tr><td><span class="api-method method-get">GET</span></td><td>/api/admin/logs</td><td>操作日志</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ===== Section 6: Document Summary ===== -->
+<section class="section">
+  <h2 class="section-title"><span class="icon" style="background:rgba(20,184,166,0.15);color:#14b8a6;">&#9733;</span> 交付物总量汇总</h2>
+  <p class="section-desc">完成本项目需要产出的全部文件清单及数量统计</p>
+
+  <div class="doc-summary">
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#3b82f6;">25</div>
+      </div>
+      <div class="ds-label">前端 Vue 页面 (.vue)</div>
+      <div class="ds-detail">含 auth(2) + home(1) + product(4)<br>+ order(4) + payment(2) + user(3)<br>+ chat(3) + admin(5) + innovation(4)</div>
+    </div>
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#10b981;">~75</div>
+      </div>
+      <div class="ds-label">后端 Java 文件 (.java)</div>
+      <div class="ds-detail">Entity(20) + Mapper(8) + Service(16)<br>+ Controller(7) + Config(6) + Common(5)<br>+ VO/DTO(~15) + Application(1)</div>
+    </div>
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#f59e0b;">~88</div>
+      </div>
+      <div class="ds-label">实训步骤文档 (.md)</div>
+      <div class="ds-detail">M1(12) + M2(22) + M3(16)<br>+ M4(10) + M5(10) + M6(10)<br>+ 配套代码模板/截图说明</div>
+    </div>
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#8b5cf6;">20</div>
+      </div>
+      <div class="ds-label">SQL 表定义</div>
+      <div class="ds-detail">用户域(3) + 商品域(4)<br>+ 交易域(4) + 支付域(3)<br>+ 社交域(3) + 系统域(3)</div>
+    </div>
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#ef4444;">56</div>
+      </div>
+      <div class="ds-label">RESTful API 接口</div>
+      <div class="ds-detail">Auth(6) + Product(10) + Order(10)<br>+ Payment(6) + Message(6) + Admin(8)<br>+ Innovation(4) + 其他(6)</div>
+    </div>
+    <div class="ds-card">
+      <div class="ds-head">
+        <div class="ds-num" style="color:#06b6d4;">~20</div>
+      </div>
+      <div class="ds-label">公共组件/工具/配置</div>
+      <div class="ds-detail">前端组件(20) + Store(5) + API(8)<br>+ 路由(8) + 工具函数(3)<br>+ Docker/Nginx/CI 配置</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end container -->
+
+<footer>
+  <p>CampusDeal 校园二手交易C2C平台 &mdash; 《企业级项目实训》课程载体项目</p>
+  <p style="margin-top:4px;">技术栈: Spring Boot 3 + Vue 3 + MySQL 8 + Redis 7 | 专创融合精品课程建设项目</p>
+</footer>
+
+<script>
+function switchTab(evt, group, panelId) {
+  const btns = evt.target.parentElement.querySelectorAll('.tab-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  evt.target.classList.add('active');
+  const panels = evt.target.parentElement.parentElement.querySelectorAll('.tab-panel');
+  panels.forEach(p => p.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+}
+
+// Also wire up featTabs click handlers
+document.getElementById('featTabs').querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    switchTab(e, 'featTabs', 'tab-all');
+  });
+});
+</script>
+
+</body>
+</html>
