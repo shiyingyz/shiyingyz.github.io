@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目六：监控、测试并优化MySQL性能 - 学习任务指导书</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+code, pre {
+  font-family: 'Consolas', 'Fira Code', monospace;
+}
+
+/* === 导航栏 === */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid #30363d;
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.navbar .brand {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e6edf3;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.navbar .nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.navbar .nav-links a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+  color: #58a6ff;
+  background: rgba(88, 166, 255, 0.1);
+}
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+}
+
+/* === 主内容区 === */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 1.5rem 3rem;
+}
+
+/* === Hero区域 === */
+.hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+.hero .badge {
+  display: inline-block;
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+}
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  background: linear-gradient(135deg, #58a6ff, #79c0ff, #d2a8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .meta {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  color: #8b949e;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+.hero .meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* === 通用卡片 === */
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: #484f58;
+}
+
+/* === 业务场景 === */
+.scenario-section {
+  margin-top: 2.5rem;
+}
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-title .icon {
+  font-size: 1.3rem;
+}
+.scenario-card {
+  border-left: 3px solid #58a6ff;
+}
+.scenario-card .scenario-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.scenario-card .scenario-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  color: #c9d1d9;
+  font-size: 0.95rem;
+}
+.scenario-card .scenario-item .label {
+  flex-shrink: 0;
+  background: rgba(88, 166, 255, 0.12);
+  color: #58a6ff;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* === 教学目标 === */
+.objectives-section {
+  margin-top: 2.5rem;
+}
+.objectives-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.obj-card {
+  border-top: 3px solid;
+}
+.obj-card.knowledge { border-top-color: #58a6ff; }
+.obj-card.ability { border-top-color: #3fb950; }
+.obj-card.quality { border-top-color: #d29922; }
+.obj-card.political { border-top-color: #f85149; }
+.obj-card .obj-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.obj-card.knowledge .obj-title { color: #58a6ff; }
+.obj-card.ability .obj-title { color: #3fb950; }
+.obj-card.quality .obj-title { color: #d29922; }
+.obj-card.political .obj-title { color: #f85149; }
+.obj-card ul {
+  list-style: none;
+  padding: 0;
+}
+.obj-card ul li {
+  font-size: 0.88rem;
+  color: #c9d1d9;
+  padding: 0.25rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.obj-card ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.obj-card.knowledge ul li::before { background: #58a6ff; }
+.obj-card.ability ul li::before { background: #3fb950; }
+.obj-card.quality ul li::before { background: #d29922; }
+.obj-card.political ul li::before { background: #f85149; }
+
+/* === 任务总览 === */
+.tasks-section {
+  margin-top: 2.5rem;
+}
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+.task-card {
+  position: relative;
+  overflow: hidden;
+}
+.task-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.task-card.core::before { background: linear-gradient(90deg, #58a6ff, #79c0ff); }
+.task-card.extend::before { background: linear-gradient(90deg, #3fb950, #56d364); }
+.task-card.practice::before { background: linear-gradient(90deg, #d29922, #e3b341); }
+.task-card .task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+.task-card .task-id {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8b949e;
+  background: rgba(139, 148, 158, 0.12);
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+}
+.task-card .task-type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid;
+}
+.task-card.core .task-type {
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.1);
+}
+.task-card.extend .task-type {
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.4);
+  background: rgba(63, 185, 80, 0.1);
+}
+.task-card.practice .task-type {
+  color: #d29922;
+  border-color: rgba(210, 153, 34, 0.4);
+  background: rgba(210, 153, 34, 0.1);
+}
+.task-card .task-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e6edf3;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+.task-card .task-duration {
+  font-size: 0.82rem;
+  color: #8b949e;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+.task-card .task-desc {
+  font-size: 0.9rem;
+  color: #c9d1d9;
+  line-height: 1.55;
+}
+
+/* === 知识要点 === */
+.knowledge-section {
+  margin-top: 2.5rem;
+}
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+.knowledge-card .kc-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.knowledge-card .kc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.88rem;
+  color: #c9d1d9;
+}
+.knowledge-card .kc-item .kc-key {
+  flex-shrink: 0;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #79c0ff;
+}
+
+/* === 学习路线图 === */
+.roadmap-section {
+  margin-top: 2.5rem;
+}
+.roadmap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+}
+.roadmap-step {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.roadmap-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 120px;
+}
+.roadmap-node .step-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  border: 2px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.roadmap-node:hover .step-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 16px rgba(88, 166, 255, 0.3);
+}
+.roadmap-node:nth-child(1) .step-icon { border-color: #58a6ff; background: rgba(88, 166, 255, 0.15); }
+.roadmap-node:nth-child(2) .step-icon { border-color: #3fb950; background: rgba(63, 185, 80, 0.15); }
+.roadmap-node:nth-child(3) .step-icon { border-color: #d29922; background: rgba(210, 153, 34, 0.15); }
+.roadmap-node:nth-child(4) .step-icon { border-color: #f85149; background: rgba(248, 81, 73, 0.15); }
+.roadmap-node:nth-child(5) .step-icon { border-color: #bc8cff; background: rgba(188, 140, 255, 0.15); }
+.roadmap-node:nth-child(6) .step-icon { border-color: #79c0ff; background: rgba(121, 192, 255, 0.15); }
+.roadmap-node:nth-child(7) .step-icon { border-color: #56d364; background: rgba(86, 211, 100, 0.15); }
+.roadmap-node .step-label {
+  font-size: 0.82rem;
+  color: #c9d1d9;
+  font-weight: 500;
+}
+.roadmap-arrow {
+  display: flex;
+  align-items: center;
+  color: #30363d;
+  font-size: 1.4rem;
+  padding: 0 0.2rem;
+  margin-bottom: 1.4rem;
+}
+
+/* === 页脚 === */
+footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #30363d;
+  text-align: center;
+  color: #8b949e;
+  font-size: 0.85rem;
+}
+footer a {
+  color: #58a6ff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+footer a:hover { color: #79c0ff; }
+footer .footer-links {
+  margin-bottom: 0.5rem;
+}
+
+/* === 响应式 === */
+@media (max-width: 1024px) {
+  .objectives-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .navbar { padding: 0 1rem; }
+  .nav-toggle { display: block; }
+  .navbar .nav-links {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid #30363d;
+    gap: 0.3rem;
+  }
+  .navbar .nav-links.open { display: flex; }
+  .navbar .nav-links a { padding: 0.6rem 0.8rem; }
+  .hero h1 { font-size: 1.5rem; }
+  .hero .meta { flex-direction: column; gap: 0.4rem; align-items: center; }
+  .objectives-grid { grid-template-columns: 1fr; }
+  .tasks-grid { grid-template-columns: 1fr; }
+  .knowledge-grid { grid-template-columns: 1fr; }
+  .roadmap { flex-direction: column; align-items: center; }
+  .roadmap-step { flex-direction: column; }
+  .roadmap-arrow { transform: rotate(90deg); padding: 0.2rem 0; margin-bottom: 0; }
+  .roadmap-node { width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar">
+  <a href="#" class="brand">🗄️ 数据库运维与管理</a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="菜单">☰</button>
+  <ul class="nav-links">
+    <li><a href="chapter6-guide.html" class="active">指导书</a></li>
+    <li><a href="chapter6-manual.html">操作手册</a></li>
+    <li><a href="chapter6-mindmap.html">知识结构图</a></li>
+    <li><a href="chapter6-summary.html">小结自测</a></li>
+  </ul>
+</nav>
+
+<!-- 主内容 -->
+<div class="main-content">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="badge">📚 学习任务指导书</div>
+    <h1>项目六：监控、测试并优化 MySQL 性能</h1>
+    <div class="meta">
+      <span>⏱️ 6 课时</span>
+      <span>🏢 天天电器商场</span>
+      <span>📂 数据库运维与管理</span>
+    </div>
+  </section>
+
+  <!-- 业务场景 -->
+  <section class="scenario-section">
+    <div class="section-title"><span class="icon">🏢</span> 业务场景</div>
+    <div class="card scenario-card">
+      <div class="scenario-header">⚡ 天天电器商场 — 夏季销售旺季性能危机</div>
+      <div class="scenario-item">
+        <span class="label">背景</span>
+        <span>夏天空调销售旺季，OA系统页面卡顿，假死机频发，严重影响业务运转。</span>
+      </div>
+      <div class="scenario-item">
+        <span class="label">反馈</span>
+        <span>业务系统管理员反馈：按电话号码尾号模糊查询时出现假死状态，大量查询请求堆积。</span>
+      </div>
+      <div class="scenario-item">
+        <span class="label">要求</span>
+        <span>技术主管要求：监控数据库性能，找出瓶颈，优化SQL语句，保障系统稳定运行。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 教学目标 -->
+  <section class="objectives-section">
+    <div class="section-title"><span class="icon">🎯</span> 教学目标</div>
+    <div class="objectives-grid">
+      <div class="card obj-card knowledge">
+        <div class="obj-title">📖 知识目标</div>
+        <ul>
+          <li>掌握性能监控常用指标（QPS/TPS/缓冲池命中率）</li>
+          <li>掌握 sysbench / mysqlslap 压力测试方法</li>
+          <li>掌握 EXPLAIN 执行计划分析方法</li>
+          <li>能使用 MONyog 进行数据库监控</li>
+        </ul>
+      </div>
+      <div class="card obj-card ability">
+        <div class="obj-title">🛠️ 能力目标</div>
+        <ul>
+          <li>能完成 MySQL 压力测试并出具测试报告</li>
+          <li>能使用 EXPLAIN 分析 SQL 执行计划</li>
+          <li>能针对性能瓶颈进行 SQL 语句优化</li>
+        </ul>
+      </div>
+      <div class="card obj-card quality">
+        <div class="obj-title">🌱 素养目标</div>
+        <ul>
+          <li>培养数据驱动的运维思维</li>
+          <li>养成系统化的性能分析习惯</li>
+          <li>建立监控预警意识</li>
+        </ul>
+      </div>
+      <div class="card obj-card political">
+        <div class="obj-title">🏛️ 思政目标</div>
+        <ul>
+          <li>树立质量意识与工匠精神</li>
+          <li>理解技术服务于业务的价值</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 任务总览 -->
+  <section class="tasks-section">
+    <div class="section-title"><span class="icon">📋</span> 任务总览</div>
+    <div class="tasks-grid">
+      <div class="card task-card core">
+        <div class="task-header">
+          <span class="task-id">任务 6-1</span>
+          <span class="task-type">⭐ 核心</span>
+        </div>
+        <div class="task-title">安装 MONyog 工具监控 MySQL 服务器</div>
+        <div class="task-duration">⏱️ 约 30 分钟</div>
+        <div class="task-desc">下载安装 MONyog 监控工具，连接 MySQL 服务器，配置监控面板，查看 QPS、TPS、连接数、缓冲池命中率等关键性能指标。</div>
+      </div>
+      <div class="card task-card core">
+        <div class="task-header">
+          <span class="task-id">任务 6-2</span>
+          <span class="task-type">⭐ 核心</span>
+        </div>
+        <div class="task-title">对 MySQL 数据库读写性能调优</div>
+        <div class="task-duration">⏱️ 约 30 分钟</div>
+        <div class="task-desc">通过调整 innodb_buffer_pool_size、tmp_table_size、max_connections 等配置参数，优化 MySQL 读写性能，并通过 MONyog 验证效果。</div>
+      </div>
+      <div class="card task-card core">
+        <div class="task-header">
+          <span class="task-id">任务 6-3</span>
+          <span class="task-type">⭐ 核心</span>
+        </div>
+        <div class="task-title">创建 MySQL 数据库压力测试报告</div>
+        <div class="task-duration">⏱️ 约 40 分钟</div>
+        <div class="task-desc">使用 sysbench 或 mysqlslap 对 MySQL 进行压力测试，记录 QPS、TPS、响应时间等数据，撰写完整的性能测试报告。</div>
+      </div>
+      <div class="card task-card core">
+        <div class="task-header">
+          <span class="task-id">任务 6-4</span>
+          <span class="task-type">⭐ 核心</span>
+        </div>
+        <div class="task-title">使用 EXPLAIN 工具分析并优化单表 SQL 查询</div>
+        <div class="task-duration">⏱️ 约 30 分钟</div>
+        <div class="task-desc">针对天天电器商场 OA 系统中的单表查询，使用 EXPLAIN 分析执行计划，重点关注 type、key、rows、Extra 字段，添加合适索引进行优化。</div>
+      </div>
+      <div class="card task-card core">
+        <div class="task-header">
+          <span class="task-id">任务 6-5</span>
+          <span class="task-type">⭐ 核心</span>
+        </div>
+        <div class="task-title">使用 EXPLAIN 工具分析并优化多表 SQL 查询</div>
+        <div class="task-duration">⏱️ 约 40 分钟</div>
+        <div class="task-desc">分析涉及 JOIN 的多表查询语句，运用联合索引最左前缀原则和覆盖索引技术进行优化，对比优化前后执行计划。</div>
+      </div>
+      <div class="card task-card extend">
+        <div class="task-header">
+          <span class="task-id">任务 6-6</span>
+          <span class="task-type">🌱 拓展</span>
+        </div>
+        <div class="task-title">申请及使用阿里云 RDS 数据库</div>
+        <div class="task-duration">⏱️ 约 45 分钟</div>
+        <div class="task-desc">了解阿里云 RDS 云数据库的申请流程，完成实例创建与连接配置，体验云端数据库的监控与运维管理功能。</div>
+      </div>
+      <div class="card task-card practice">
+        <div class="task-header">
+          <span class="task-id">任务 6-7</span>
+          <span class="task-type">📝 实训</span>
+        </div>
+        <div class="task-title">MySQL 及阿里云 RDS 数据库运维任务</div>
+        <div class="task-duration">⏱️ 约 30 分钟</div>
+        <div class="task-desc">综合运用前面所学知识，完成 MySQL 本地数据库和阿里云 RDS 数据库的综合运维操作，包括备份、监控、性能优化等。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 知识要点速查 -->
+  <section class="knowledge-section">
+    <div class="section-title"><span class="icon">💡</span> 知识要点速查</div>
+    <div class="knowledge-grid">
+      <div class="card knowledge-card">
+        <div class="kc-title">📊 性能监控指标</div>
+        <div class="kc-item"><span class="kc-key">QPS</span> 每秒查询数，衡量数据库查询吞吐量</div>
+        <div class="kc-item"><span class="kc-key">TPS</span> 每秒事务数，衡量数据库事务处理能力</div>
+        <div class="kc-item"><span class="kc-key">Connections</span> 当前连接数与最大连接数</div>
+        <div class="kc-item"><span class="kc-key">Buffer Pool</span> InnoDB 缓冲池命中率，理想值 &gt; 99%</div>
+      </div>
+      <div class="card knowledge-card">
+        <div class="kc-title">🔧 监控工具</div>
+        <div class="kc-item"><span class="kc-key">mysqladmin</span> MySQL 内置管理工具，可查看状态变量</div>
+        <div class="kc-item"><span class="kc-key">MONyog</span> 企业级 MySQL 监控工具，可视化仪表盘</div>
+        <div class="kc-item"><span class="kc-key">SHOW STATUS</span> 查看 MySQL 运行时状态变量</div>
+        <div class="kc-item"><span class="kc-key">SHOW PROCESSLIST</span> 查看当前连接的线程列表</div>
+      </div>
+      <div class="card knowledge-card">
+        <div class="kc-title">⚡ 压测工具</div>
+        <div class="kc-item"><span class="kc-key">mysqlslap</span> MySQL 内置压测工具，模拟并发查询</div>
+        <div class="kc-item"><span class="kc-key">sysbench</span> 开源跨平台基准测试工具</div>
+        <div class="kc-item"><span class="kc-key">oltp_read_only</span> sysbench 只读测试模式</div>
+        <div class="kc-item"><span class="kc-key">oltp_read_write</span> sysbench 读写混合测试模式</div>
+      </div>
+      <div class="card knowledge-card">
+        <div class="kc-title">🔍 EXPLAIN 关键字段</div>
+        <div class="kc-item"><span class="kc-key">type</span> 访问类型，从优到差：system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL</div>
+        <div class="kc-item"><span class="kc-key">key</span> 实际使用的索引名称</div>
+        <div class="kc-item"><span class="kc-key">rows</span> 预估扫描的行数，越少越好</div>
+        <div class="kc-item"><span class="kc-key">Extra</span> 额外信息，关注 Using index / Using filesort / Using temporary</div>
+      </div>
+      <div class="card knowledge-card">
+        <div class="kc-title">🏷️ 索引优化</div>
+        <div class="kc-item"><span class="kc-key">最左前缀</span> 联合索引遵循最左前缀匹配原则</div>
+        <div class="kc-item"><span class="kc-key">覆盖索引</span> 查询字段全部被索引包含，避免回表</div>
+        <div class="kc-item"><span class="kc-key">索引下推</span> MySQL 5.6+ 将 WHERE 条件下推到存储引擎层</div>
+        <div class="kc-item"><span class="kc-key">避免失效</span> 避免对索引列使用函数、隐式类型转换、LIKE '%xx'</div>
+      </div>
+      <div class="card knowledge-card">
+        <div class="kc-title">⚙️ 关键配置参数</div>
+        <div class="kc-item"><span class="kc-key">innodb_buffer_pool_size</span> InnoDB 缓冲池大小，建议为物理内存 60%-70%</div>
+        <div class="kc-item"><span class="kc-key">tmp_table_size</span> 临时表大小上限</div>
+        <div class="kc-item"><span class="kc-key">max_connections</span> 最大连接数</div>
+        <div class="kc-item"><span class="kc-key">query_cache_size</span> 查询缓存大小（MySQL 8.0 已移除）</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学习路线图 -->
+  <section class="roadmap-section">
+    <div class="section-title"><span class="icon">🗺️</span> 学习路线图</div>
+    <div class="card" style="padding: 1.5rem 2rem;">
+      <div class="roadmap">
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">🛠️</div>
+            <div class="step-label">监控工具<br>安装</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">⚡</div>
+            <div class="step-label">性能<br>调优</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">📈</div>
+            <div class="step-label">压力<br>测试</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">🔍</div>
+            <div class="step-label">单表<br>优化</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">🔗</div>
+            <div class="step-label">多表<br>优化</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">☁️</div>
+            <div class="step-label">云数据<br>库</div>
+          </div>
+          <div class="roadmap-arrow">→</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-node">
+            <div class="step-icon">🚀</div>
+            <div class="step-label">运维<br>实战</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 页脚 -->
+<footer>
+  <div class="footer-links">
+    <a href="https://shiyingyz.github.io/courses/db/#chapter6" target="_blank" rel="noopener">🔗 返回课程网站</a>
+  </div>
+  <div>© 数据库运维与管理 — 项目六学习资源</div>
+</footer>
+
+</body>
+</html>
