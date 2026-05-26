@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目六 操作手册 - 监控、测试并优化 MySQL 性能</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== 顶部导航栏 ===== */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #30363d;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  font-size: 15px;
+  font-weight: 600;
+  color: #58a6ff;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-links a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  color: #e6edf3;
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.nav-links a.active {
+  color: #58a6ff;
+  background: rgba(88, 166, 255, 0.12);
+}
+
+/* ===== 侧边栏 ===== */
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #161b22;
+  border-right: 1px solid #30363d;
+  overflow-y: auto;
+  padding: 24px 16px;
+  z-index: 50;
+}
+
+.sidebar h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8b949e;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li { margin-bottom: 2px; }
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.sidebar a:hover {
+  color: #e6edf3;
+  background: rgba(88, 166, 255, 0.08);
+}
+
+.sidebar .task-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar .dot-core { background: #f85149; }
+.sidebar .dot-expand { background: #a371f7; }
+.sidebar .dot-practice { background: #d29922; }
+
+/* ===== 主内容区 ===== */
+.main-content {
+  margin-left: 260px;
+  padding-top: 56px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== 页面标题区域 ===== */
+.page-header {
+  padding: 48px 48px 32px;
+  border-bottom: 1px solid #30363d;
+  background: linear-gradient(180deg, rgba(88, 166, 255, 0.04) 0%, transparent 100%);
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #58a6ff;
+  margin-bottom: 8px;
+}
+
+.page-header .subtitle {
+  font-size: 16px;
+  color: #8b949e;
+}
+
+/* ===== 内容容器 ===== */
+.content-wrapper {
+  padding: 32px 48px 80px;
+}
+
+/* ===== 任务卡片 ===== */
+.task-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.task-card:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.15);
+}
+
+.task-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.task-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.task-header-text h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #e6edf3;
+  margin-bottom: 4px;
+}
+
+.task-header-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.task-badge {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.badge-core { background: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.3); }
+.badge-expand { background: rgba(163, 113, 247, 0.15); color: #a371f7; border: 1px solid rgba(163, 113, 247, 0.3); }
+.badge-practice { background: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.3); }
+
+.task-desc {
+  padding: 20px 28px;
+  border-bottom: 1px solid #30363d;
+  background: rgba(13, 17, 23, 0.4);
+}
+
+.task-desc p {
+  color: #8b949e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===== 步骤区域 ===== */
+.task-steps {
+  padding: 16px 28px 28px;
+}
+
+/* 步骤条 */
+.step-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+}
+
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 48px;
+  bottom: 0;
+  width: 2px;
+}
+
+.step-line-core::after { background: #f85149; }
+.step-line-expand::after { background: #a371f7; }
+.step-line-practice::after { background: #d29922; }
+
+.step-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.step-num-core { background: rgba(248, 81, 73, 0.15); color: #f85149; border: 2px solid rgba(248, 81, 73, 0.3); }
+.step-num-expand { background: rgba(163, 113, 247, 0.15); color: #a371f7; border: 2px solid rgba(163, 113, 247, 0.3); }
+.step-num-practice { background: rgba(210, 153, 34, 0.15); color: #d29922; border: 2px solid rgba(210, 153, 34, 0.3); }
+
+.step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e6edf3;
+  margin-bottom: 10px;
+}
+
+.step-content {
+  font-size: 14px;
+  color: #8b949e;
+  line-height: 1.7;
+}
+
+.step-content p { margin-bottom: 8px; }
+
+.step-note {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.note-info { background: rgba(88, 166, 255, 0.08); border-left: 3px solid #58a6ff; color: #8b949e; }
+.note-warn { background: rgba(210, 153, 34, 0.08); border-left: 3px solid #d29922; color: #8b949e; }
+.note-success { background: rgba(63, 185, 80, 0.08); border-left: 3px solid #3fb950; color: #8b949e; }
+
+/* ===== 代码块 ===== */
+.code-block {
+  margin: 12px 0;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  font-size: 12px;
+}
+
+.code-lang {
+  color: #8b949e;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.copy-btn {
+  background: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.4);
+}
+
+.copy-btn.copied {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.3);
+}
+
+.code-content {
+  padding: 14px 16px;
+  background: #0d1117;
+  overflow-x: auto;
+}
+
+.code-content pre {
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e6edf3;
+  white-space: pre;
+  margin: 0;
+}
+
+.code-content code {
+  font-family: 'Consolas', 'Fira Code', monospace;
+}
+
+/* 内联代码 */
+.inline-code {
+  background: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 13px;
+}
+
+/* ===== 参数表格 ===== */
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.param-table th {
+  background: rgba(88, 166, 255, 0.08);
+  color: #58a6ff;
+  text-align: left;
+  padding: 10px 14px;
+  border: 1px solid #30363d;
+  font-weight: 600;
+}
+
+.param-table td {
+  padding: 10px 14px;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+
+.param-table td:first-child {
+  color: #e6edf3;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 12px;
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0d1117; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .page-header { padding: 32px 24px; }
+  .content-wrapper { padding: 24px; }
+  .top-nav { padding: 0 16px; }
+  .nav-brand { font-size: 13px; }
+}
+
+@media (max-width: 640px) {
+  .nav-links { gap: 2px; }
+  .nav-links a { font-size: 11px; padding: 4px 8px; }
+  .task-header-text h2 { font-size: 17px; }
+  .page-header h1 { font-size: 24px; }
+  .step-num { width: 36px; height: 36px; font-size: 14px; }
+}
+
+/* 平滑滚动 */
+html { scroll-behavior: smooth; }
+
+/* ===== 结果高亮块 ===== */
+.result-block {
+  margin: 10px 0;
+  padding: 12px 16px;
+  background: rgba(63, 185, 80, 0.06);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.result-block strong { color: #3fb950; }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航栏 ===== -->
+<nav class="top-nav">
+  <div class="nav-brand">&#x1F5C4;&#xFE0F; 数据库运维与管理 &middot; 项目六操作手册</div>
+  <div class="nav-links">
+    <a href="chapter6-guide.html">&#x1F4D6; 指导书</a>
+    <a href="chapter6-manual.html" class="active">&#x1F4D1; 操作手册</a>
+    <a href="chapter6-mindmap.html">&#x1F9E0; 知识结构图</a>
+    <a href="chapter6-summary.html">&#x270D;&#xFE0F; 小结自测</a>
+  </div>
+</nav>
+
+<!-- ===== 侧边栏 ===== -->
+<aside class="sidebar">
+  <h3>&#x1F4CB; 任务导航</h3>
+  <ul>
+    <li><a href="#task6-1"><span class="task-dot dot-core"></span>任务6-1 安装MONyog</a></li>
+    <li><a href="#task6-2"><span class="task-dot dot-core"></span>任务6-2 读写性能调优</a></li>
+    <li><a href="#task6-3"><span class="task-dot dot-core"></span>任务6-3 压力测试报告</a></li>
+    <li><a href="#task6-4"><span class="task-dot dot-core"></span>任务6-4 单表SQL优化</a></li>
+    <li><a href="#task6-5"><span class="task-dot dot-core"></span>任务6-5 多表SQL优化</a></li>
+    <li><a href="#task6-6"><span class="task-dot dot-expand"></span>任务6-6 阿里云RDS</a></li>
+    <li><a href="#task6-7"><span class="task-dot dot-practice"></span>任务6-7 慢查询运维</a></li>
+  </ul>
+</aside>
+
+<!-- ===== 主内容区 ===== -->
+<main class="main-content">
+
+  <!-- 页面标题 -->
+  <div class="page-header">
+    <h1>&#x1F4CA; 项目六：监控、测试并优化 MySQL 性能</h1>
+    <p class="subtitle">&#x1F4D1; 操作手册 — 7个实训任务完整操作步骤</p>
+  </div>
+
+  <div class="content-wrapper">
+
+    <!-- ========== 任务6-1 ========== -->
+    <section id="task6-1" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x1F50D;</div>
+        <div class="task-header-text">
+          <h2>任务6-1 安装MONyog工具监控MySQL服务器</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-core">&#x2B50; 核心</span>
+            <span class="task-badge badge-core">&#x23F1; 约30分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>MONyog是一个优秀的MySQL监控工具，可以实时监测MySQL服务器，查看MySQL服务器的运行状态。支持查询分析功能，帮助DBA快速定位性能瓶颈。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4E5; 步骤1：下载MONyog软件</div>
+            <div class="step-content">
+              <p>进入MONyog官方网站 <span class="inline-code">www.webyog.com/product/monyog</span>，单击 <strong>"Download Free Trial"</strong> 按钮下载试用版安装包。</p>
+              <div class="step-note note-info">
+                <strong>&#x1F4CC; 提示：</strong>MONyog提供14天免费试用期，安装包大小约80MB，支持Windows和Linux平台。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x2699;&#xFE0F; 步骤2：安装软件</div>
+            <div class="step-content">
+              <p>双击下载的安装包，按照默认设置进行安装。安装过程中需要设置管理员账户和密码，请妥善保管。</p>
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 注意：</strong>建议使用强密码，包含大小写字母、数字和特殊字符，长度至少8位。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F310; 步骤3：登录管理界面</div>
+            <div class="step-content">
+              <p>打开浏览器，在地址栏输入以下地址访问MONyog管理界面：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">url</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'http://127.0.0.1:5555/mindex.html')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>http://127.0.0.1:5555/mindex.html</code></pre></div>
+              </div>
+              <p>输入用户名 <strong>admin</strong> 和安装时设置的密码完成登录。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x2709;&#xFE0F; 步骤4：输入邮箱继续评估</div>
+            <div class="step-content">
+              <p>登录后系统会提示输入邮箱进行试用评估，单击 <strong>"CONTINUE EVALUATION"</strong> 按钮继续。</p>
+              <div class="step-note note-info">
+                <strong>&#x1F4CC; 提示：</strong>建议使用常用邮箱注册，以便接收产品更新和使用技巧。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤5 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">5</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F517; 步骤5：配置数据库连接</div>
+            <div class="step-content">
+              <p>在MONyog中添加要监控的MySQL服务器，填写以下连接信息：</p>
+              <table class="param-table">
+                <tr><th>参数</th><th>说明</th><th>示例值</th></tr>
+                <tr><td>Server Name</td><td>服务器显示名称</td><td>MySQL-Prod-01</td></tr>
+                <tr><td>Hostname</td><td>MySQL服务器主机名或IP</td><td>192.168.239.51</td></tr>
+                <tr><td>Port</td><td>MySQL服务端口号</td><td>3306</td></tr>
+                <tr><td>Username</td><td>MySQL登录用户名</td><td>root</td></tr>
+                <tr><td>Password</td><td>MySQL登录密码</td><td>********</td></tr>
+              </table>
+              <p>填写完成后单击 <strong>TEST</strong> 测试连接，测试成功单击 <strong>SAVE</strong> 保存配置。</p>
+              <div class="step-note note-success">
+                <strong>&#x2705; 验证：</strong>若连接成功会显示绿色对勾，说明MONyog已成功连接到目标MySQL服务器。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤6 -->
+        <div class="step-item">
+          <div class="step-num step-num-core">6</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4CA; 步骤6：查看监控面板</div>
+            <div class="step-content">
+              <p>依次单击 <strong>"Monitors"</strong> → <strong>"Select Servers"</strong> → 选择配置好的服务器 → <strong>"Apply"</strong>，即可进入监控面板。</p>
+              <p>监控面板可查看以下关键指标：</p>
+              <ul style="color: #8b949e; font-size: 14px; padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+                <li><strong style="color: #58a6ff;">QPS</strong>（每秒查询数）</li>
+                <li><strong style="color: #58a6ff;">连接数</strong>（当前/最大连接数）</li>
+                <li><strong style="color: #58a6ff;">缓冲池命中率</strong>（InnoDB Buffer Pool Hit Rate）</li>
+                <li><strong style="color: #58a6ff;">慢查询数量</strong></li>
+                <li><strong style="color: #58a6ff;">磁盘I/O</strong>读写速率</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-2 ========== -->
+    <section id="task6-2" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x2699;&#xFE0F;</div>
+        <div class="task-header-text">
+          <h2>任务6-2 对MySQL数据库读写性能调优</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-core">&#x2B50; 核心</span>
+            <span class="task-badge badge-core">&#x23F1; 约30分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>大多数性能优化不是一项单纯的工作，需要考虑CPU、内存、I/O、数据库参数等多个维度。本任务聚焦两个关键参数调优。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F9EE; 步骤1：调整 innodb_buffer_pool_size 参数</div>
+            <div class="step-content">
+              <p>该参数决定InnoDB缓冲池大小，直接影响读写性能。默认值仅128MB，需要根据物理内存合理调整。</p>
+
+              <p>查看当前值：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'mysql> show global variables like \'%innodb_buffer_pool_size%\';\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>mysql&gt; show global variables like '%innodb_buffer_pool_size%';</code></pre></div>
+              </div>
+
+              <p>设置新值（示例设为6GB）：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'mysql> set global innodb_buffer_pool_size=6442450944;\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>mysql&gt; set global innodb_buffer_pool_size=6442450944;</code></pre></div>
+              </div>
+
+              <div class="step-note note-info">
+                <strong>&#x1F4CC; 说明：</strong>官方建议设置为主机物理内存的 <strong>40%~80%</strong>。6442450944字节 = 6GB，适用于8GB~15GB物理内存的服务器。使用 <span class="inline-code">set global</span> 可在线修改，重启后失效；写入配置文件可永久生效。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item">
+          <div class="step-num step-num-core">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4BE; 步骤2：调整 tmp_table_size 参数</div>
+            <div class="step-content">
+              <p>该参数控制内存中临时表的最大大小，超过此值则写入磁盘临时表，影响查询速度。</p>
+
+              <p>查看临时表使用情况：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'mysql> show global status where variable_name in (\'Created_tmp_disk_tables\',\'Created_tmp_tables\');\nmysql> show global variables like \'%tmp_table_size%\';\nmysql> set global tmp_table_size=25165824;\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>mysql&gt; show global status where variable_name in ('Created_tmp_disk_tables','Created_tmp_tables');
+mysql&gt; show global variables like '%tmp_table_size%';
+mysql&gt; set global tmp_table_size=25165824;</code></pre></div>
+              </div>
+
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 分析：</strong>计算 <span class="inline-code">Created_tmp_disk_tables / Created_tmp_tables</span> 的比值。若该比值超过 <strong>25%</strong>，说明大量临时表被写入磁盘，需要增大 <span class="inline-code">tmp_table_size</span>。25165824字节 ≈ 24MB。
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-3 ========== -->
+    <section id="task6-3" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x1F4CA;</div>
+        <div class="task-header-text">
+          <h2>任务6-3 创建MySQL数据库压力测试报告</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-core">&#x2B50; 核心</span>
+            <span class="task-badge badge-core">&#x23F1; 约40分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>SysBench是跨平台多线程模块化基准测试工具，用于评估高负载下数据库核心参数性能。本任务使用SysBench对MySQL进行OLTP读写压力测试。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4E6; 步骤1：安装SysBench软件</div>
+            <div class="step-content">
+              <p>在Linux环境下通过源码编译安装SysBench 1.0.18版本：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'yum -y install make automake libtool pkgconfig libaio-devel git\ngit clone https://github.com/akopytov/sysbench.git\ncd sysbench\ngit checkout 1.0.18\n./autogen.sh\n./configure --prefix=/usr --mandir=/usr/share/man\nmake && make install\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>yum -y install make automake libtool pkgconfig libaio-devel git
+git clone https://github.com/akopytov/sysbench.git
+cd sysbench
+git checkout 1.0.18
+./autogen.sh
+./configure --prefix=/usr --mandir=/usr/share/man
+make &amp;&amp; make install</code></pre></div>
+              </div>
+              <div class="step-note note-success">
+                <strong>&#x2705; 验证安装：</strong>执行 <span class="inline-code">sysbench --version</span> 确认显示版本号为1.0.18。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F504; 步骤2：准备测试数据</div>
+            <div class="step-content">
+              <p>使用SysBench的 <span class="inline-code">prepare</span> 命令在目标数据库创建测试表和数据：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'sysbench --mysql-host=192.168.239.51 --mysql-port=3308 --mysql-user=yzw --mysql-password=yzw --mysql-db=sbtest --table_size=25000 --tables=10 --events=0 --report-interval=10 --time=600 oltp_read_write prepare\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>sysbench \
+  --mysql-host=192.168.239.51 \
+  --mysql-port=3308 \
+  --mysql-user=yzw \
+  --mysql-password=yzw \
+  --mysql-db=sbtest \
+  --table_size=25000 \
+  --tables=10 \
+  --events=0 \
+  --report-interval=10 \
+  --time=600 \
+  oltp_read_write prepare</code></pre></div>
+              </div>
+
+              <p>参数说明：</p>
+              <table class="param-table">
+                <tr><th>参数</th><th>说明</th></tr>
+                <tr><td>mysql-host</td><td>测试目标MySQL服务器IP地址</td></tr>
+                <tr><td>mysql-port</td><td>MySQL服务连接端口</td></tr>
+                <tr><td>mysql-user</td><td>连接MySQL的用户名</td></tr>
+                <tr><td>mysql-password</td><td>连接MySQL的密码</td></tr>
+                <tr><td>mysql-db</td><td>测试使用的数据库名称</td></tr>
+                <tr><td>table_size</td><td>每个表的数据行数</td></tr>
+                <tr><td>tables</td><td>创建的测试表数量</td></tr>
+                <tr><td>report-interval</td><td>报告输出的间隔秒数</td></tr>
+                <tr><td>time</td><td>测试执行的总时间（秒）</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x25B6;&#xFE0F; 步骤3：执行压力测试</div>
+            <div class="step-content">
+              <p>使用 <span class="inline-code">oltp_read_write run</span> 模式执行读写混合压力测试：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'sysbench --mysql-host=192.168.239.51 --mysql-port=3308 --mysql-user=yzw --mysql-password=yzw --mysql-db=sbtest --table_size=25000 --tables=10 --events=0 --report-interval=10 --time=600 oltp_read_write run\n\n# 修改并发数进行多次测试\nsysbench ... --threads=16 ... oltp_read_write run\nsysbench ... --threads=32 ... oltp_read_write run\nsysbench ... --threads=64 ... oltp_read_write run\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>sysbench \
+  --mysql-host=192.168.239.51 \
+  --mysql-port=3308 \
+  --mysql-user=yzw \
+  --mysql-password=yzw \
+  --mysql-db=sbtest \
+  --table_size=25000 \
+  --tables=10 \
+  --events=0 \
+  --report-interval=10 \
+  --time=600 \
+  oltp_read_write run
+
+# 修改并发线程数，多次重复测试以观察性能变化趋势
+sysbench ... --threads=16 ... oltp_read_write run
+sysbench ... --threads=32 ... oltp_read_write run
+sysbench ... --threads=64 ... oltp_read_write run</code></pre></div>
+              </div>
+
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 重要：</strong>通过 <span class="inline-code">--threads</span> 参数调整并发数（如8、16、32、64、128），多次重复测试，生成不同并发级别的性能数据，以便绘制TPS/QPS与并发数的关系曲线。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="step-item">
+          <div class="step-num step-num-core">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F9F9; 步骤4：清理测试数据</div>
+            <div class="step-content">
+              <p>测试完成后清理数据库中的测试数据：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'sysbench --mysql-host=192.168.239.51 --mysql-port=3308 --mysql-user=yzw --mysql-password=yzw --mysql-db=sbtest --table_size=25000 --tables=10 --events=0 --report-interval=10 --time=600 oltp_read_write cleanup\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>sysbench --mysql-host=192.168.239.51 --mysql-port=3308 \
+  --mysql-user=yzw --mysql-password=yzw --mysql-db=sbtest \
+  --table_size=25000 --tables=10 --events=0 \
+  --report-interval=10 --time=600 \
+  oltp_read_write cleanup</code></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-4 ========== -->
+    <section id="task6-4" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x1F50E;</div>
+        <div class="task-header-text">
+          <h2>任务6-4 使用explain工具分析并优化单表SQL查询</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-core">&#x2B50; 核心</span>
+            <span class="task-badge badge-core">&#x23F1; 约30分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>使用MySQL的 <span class="inline-code">EXPLAIN</span> 工具对SQL查询语句进行分析，通过索引优化从全表扫描变为高效范围扫描，大幅提升查询性能。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4DD; 步骤1：创建article测试表</div>
+            <div class="step-content">
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'CREATE TABLE IF NOT EXISTS `article` (\n  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n  `author_id` int(10) unsigned NOT NULL,\n  `category_id` int(10) unsigned NOT NULL,\n  `views` int(10) unsigned NOT NULL,\n  `comments` int(10) unsigned NOT NULL,\n  `title` varbinary(255) NOT NULL,\n  `content` text NOT NULL,\n  PRIMARY KEY (`id`)\n);\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>CREATE TABLE IF NOT EXISTS `article` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `author_id` int(10) unsigned NOT NULL,
+  `category_id` int(10) unsigned NOT NULL,
+  `views` int(10) unsigned NOT NULL,
+  `comments` int(10) unsigned NOT NULL,
+  `title` varbinary(255) NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`)
+);</code></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x2795; 步骤2：插入测试数据</div>
+            <div class="step-content">
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'INSERT INTO `article` (author_id, category_id, views, comments, title, content) VALUES\n(1, 1, 1, 1, \'1\', \'1\'),\n(2, 2, 2, 2, \'2\', \'2\'),\n(1, 1, 3, 3, \'3\', \'3\');\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>INSERT INTO `article` (author_id, category_id, views, comments, title, content) VALUES
+(1, 1, 1, 1, '1', '1'),
+(2, 2, 2, 2, '2', '2'),
+(1, 1, 3, 3, '3', '3');</code></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F50D; 步骤3：分析无索引查询（EXPLAIN）</div>
+            <div class="step-content">
+              <p>对目标查询使用EXPLAIN分析执行计划：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'EXPLAIN SELECT author_id FROM article WHERE category_id = 1 AND comments > 1 ORDER BY views DESC LIMIT 1\\G\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>EXPLAIN SELECT author_id FROM article
+WHERE category_id = 1 AND comments &gt; 1
+ORDER BY views DESC LIMIT 1\G</code></pre></div>
+              </div>
+
+              <div class="result-block">
+                <p><strong>分析结果（无索引时）：</strong></p>
+                <p>type = <strong style="color:#f85149;">ALL</strong>（全表扫描，性能最差）</p>
+                <p>Extra = <strong style="color:#f85149;">Using where; Using filesort</strong>（最坏情况，需要额外排序操作）</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x26A0;&#xFE0F; 步骤4：添加联合索引（初次尝试）</div>
+            <div class="step-content">
+              <p>为category_id、comments、views三列建立联合索引：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'ALTER TABLE article ADD INDEX x (category_id, comments, views);\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>ALTER TABLE article ADD INDEX x (category_id, comments, views);</code></pre></div>
+              </div>
+
+              <div class="result-block">
+                <p><strong>再次EXPLAIN结果：</strong></p>
+                <p>type = <strong style="color:#d29922;">range</strong>（范围扫描，有改善但仍不理想）</p>
+                <p>Extra仍有 <strong style="color:#f85149;">Using filesort</strong></p>
+              </div>
+
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 原因分析：</strong><span class="inline-code">comments</span> 使用了范围查询（<span class="inline-code">&gt; 1</span>），根据MySQL索引最左前缀原则，范围查询列之后的索引字段 <span class="inline-code">views</span> 会失效，因此排序仍需要文件排序。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤5 -->
+        <div class="step-item">
+          <div class="step-num step-num-core">5</div>
+          <div class="step-body">
+            <div class="step-title">&#x2705; 步骤5：重建索引优化（最终方案）</div>
+            <div class="step-content">
+              <p>删除旧索引，重建为 <span class="inline-code">(category_id, views)</span> 双列索引：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'DROP INDEX x ON article;\nALTER TABLE article ADD INDEX y (category_id, views);\nEXPLAIN SELECT author_id FROM article WHERE category_id = 1 AND comments > 1 ORDER BY views DESC LIMIT 1\\G\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>DROP INDEX x ON article;
+ALTER TABLE article ADD INDEX y (category_id, views);
+
+EXPLAIN SELECT author_id FROM article
+WHERE category_id = 1 AND comments &gt; 1
+ORDER BY views DESC LIMIT 1\G</code></pre></div>
+              </div>
+
+              <div class="step-note note-success">
+                <strong>&#x2705; 最终优化结果：</strong><br>
+                type = <strong style="color:#3fb950;">ref</strong>（非唯一索引查找，理想结果）<br>
+                Extra = <strong style="color:#3fb950;">Using where; Backward index scan</strong>（利用索引反向扫描完成排序，无需额外排序操作）
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-5 ========== -->
+    <section id="task6-5" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x1F517;</div>
+        <div class="task-header-text">
+          <h2>任务6-5 使用explain工具分析并优化多表SQL查询</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-core">&#x2B50; 核心</span>
+            <span class="task-badge badge-core">&#x23F1; 约40分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>多表连接查询是数据库性能问题的重灾区。本任务使用EXPLAIN分析两表及三表LEFT JOIN查询，通过合理建索引实现从全表扫描到索引查找的优化。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4CB; 步骤1：创建3个关联表</div>
+            <div class="step-content">
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'CREATE TABLE IF NOT EXISTS `class` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `card` int(10) unsigned NOT NULL, PRIMARY KEY (`id`));\nCREATE TABLE IF NOT EXISTS `book` (`bookid` int(10) unsigned NOT NULL AUTO_INCREMENT, `card` int(10) unsigned NOT NULL, PRIMARY KEY (`bookid`));\nCREATE TABLE IF NOT EXISTS `phone` (`phoneid` int(10) unsigned NOT NULL AUTO_INCREMENT, `card` int(10) unsigned NOT NULL, PRIMARY KEY (`phoneid`)) engine=innodb;\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>CREATE TABLE IF NOT EXISTS `class` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `card` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+);
+CREATE TABLE IF NOT EXISTS `book` (
+  `bookid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `card` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`bookid`)
+);
+CREATE TABLE IF NOT EXISTS `phone` (
+  `phoneid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `card` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`phoneid`)
+) engine=innodb;</code></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4E5; 步骤2：使用存储过程插入批量数据</div>
+            <div class="step-content">
+              <p>创建存储过程向3个表各插入10000条随机数据：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'delimiter //\ncreate procedure p_insert_lot()\nbegin\n  DECLARE i INT DEFAULT 0;\n  while i<10000 do\n  begin\n    declare j int;\n    select FLOOR(1 + (RAND() * 20)) into j;\n    insert into class(card) values(j);\n    select FLOOR(1 + (RAND() * 20)) into j;\n    insert into book(card) values(j);\n    select FLOOR(1 + (RAND() * 20)) into j;\n    insert into phone(card) values(j);\n    set i=i+1;\n  end;\n  end while;\nend;\n//\ndelimiter ;\ncall p_insert_lot;\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>delimiter //
+create procedure p_insert_lot()
+begin
+  DECLARE i INT DEFAULT 0;
+  while i&lt;10000 do
+  begin
+    declare j int;
+    select FLOOR(1 + (RAND() * 20)) into j;
+    insert into class(card) values(j);
+    select FLOOR(1 + (RAND() * 20)) into j;
+    insert into book(card) values(j);
+    select FLOOR(1 + (RAND() * 20)) into j;
+    insert into phone(card) values(j);
+    set i=i+1;
+  end;
+  end while;
+end;
+//
+delimiter ;
+
+call p_insert_lot;</code></pre></div>
+              </div>
+              <div class="step-note note-info">
+                <strong>&#x1F4CC; 说明：</strong>存储过程循环10000次，每次向3个表各插入1条随机数据（card值为1~20随机），执行后共30000条数据。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="step-item step-line-core">
+          <div class="step-num step-num-core">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F50D; 步骤3：分析两表LEFT JOIN（优化前）</div>
+            <div class="step-content">
+              <p>查看两表连接的无索引执行计划：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'explain select * from class left join book on class.card = book.card\\G\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>explain select * from class left join book on class.card = book.card\G</code></pre></div>
+              </div>
+
+              <div class="result-block">
+                <p><strong>优化前结果：</strong></p>
+                <p>class表 type = <strong style="color:#f85149;">ALL</strong></p>
+                <p>book表 type = <strong style="color:#f85149;">ALL</strong>（两个表都是全表扫描，10000×10000次比较）</p>
+              </div>
+
+              <p style="margin-top:12px;">为右表book添加索引：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'ALTER TABLE book ADD INDEX y (card);\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>ALTER TABLE book ADD INDEX y (card);</code></pre></div>
+              </div>
+
+              <div class="step-note note-success">
+                <strong>&#x2705; 优化后：</strong>book表 type = <strong style="color:#3fb950;">ref</strong>（索引查找）<br>
+                <strong>&#x1F4CC; 原则：</strong>LEFT JOIN优化右表，RIGHT JOIN优化左表，INNER JOIN优化策略同LEFT JOIN。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="step-item">
+          <div class="step-num step-num-core">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F50D; 步骤4：分析三表LEFT JOIN优化</div>
+            <div class="step-content">
+              <p>分析三表连接的执行计划：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'explain select * from class left join book on class.card=book.card left join phone on book.card=phone.card;\n\nALTER TABLE phone ADD INDEX z (card);\nALTER TABLE book ADD INDEX y (card);\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>explain select * from class
+  left join book on class.card=book.card
+  left join phone on book.card=phone.card;
+
+-- 为两个右表添加card列索引
+ALTER TABLE phone ADD INDEX z (card);
+ALTER TABLE book ADD INDEX y (card);</code></pre></div>
+              </div>
+
+              <div class="step-note note-success">
+                <strong>&#x2705; 最终结果：</strong><br>
+                右表book type = <strong style="color:#3fb950;">ref</strong>（索引查找）<br>
+                右表phone type = <strong style="color:#3fb950;">ref</strong>（索引查找）<br>
+                <strong>&#x1F4CC; 核心规律：</strong>N表LEFT JOIN查询，需要为N-1个右表在连接字段上建立索引。
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-6 ========== -->
+    <section id="task6-6" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x2601;&#xFE0F;</div>
+        <div class="task-header-text">
+          <h2>任务6-6 申请及使用阿里云RDS数据库</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-expand">&#x1F331; 拓展</span>
+            <span class="task-badge badge-expand">&#x23F1; 约45分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>随着云计算技术发展，越来越多的企业将数据库迁移到云端。阿里云RDS（Relational Database Service）提供高可用、自动备份、弹性伸缩的云数据库服务。本任务完成RDS for MySQL的申请及基础使用。</p>
+      </div>
+      <div class="task-steps">
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F6D2; 步骤1：购买RDS for MySQL</div>
+            <div class="step-content">
+              <p>进入 <strong>阿里云官网（aliyun.com）</strong>，在产品列表中搜索"云数据库 RDS"，选择 MySQL 版本。单击"立即购买"进入配置页面。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4B0; 步骤2：选择计费方式</div>
+            <div class="step-content">
+              <p>根据需求选择计费方式：</p>
+              <ul style="color: #8b949e; font-size: 14px; padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+                <li><strong style="color: #58a6ff;">包年包月</strong> — 适合长期稳定业务，价格更优惠</li>
+                <li><strong style="color: #58a6ff;">按量付费</strong> — 适合短期测试或波动业务，弹性灵活</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F310; 步骤3：选择网络类型</div>
+            <div class="step-content">
+              <p>选择VPC（专有网络）类型，提供更高的安全性和隔离性。如果已有ECS实例，建议选择同一VPC以实现内网高速互通。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F30D; 步骤4：选择RDS服务器地域</div>
+            <div class="step-content">
+              <p>选择距离目标用户最近的地域以减少网络延迟。若已关联ECS，建议与ECS选择同一地域，使用内网连接避免公网流量费用。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">5</div>
+          <div class="step-body">
+            <div class="step-title">&#x2139;&#xFE0F; 步骤5：查看实例基本信息</div>
+            <div class="step-content">
+              <p>购买完成后进入RDS控制台，单击实例名称查看详情：</p>
+              <ul style="color: #8b949e; font-size: 14px; padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+                <li><strong style="color: #58a6ff;">内网地址</strong> — 同一VPC内ECS访问使用</li>
+                <li><strong style="color: #58a6ff;">外网地址</strong> — 需要单独申请开通</li>
+                <li><strong style="color: #58a6ff;">实例规格</strong> — CPU/内存/磁盘配置</li>
+                <li><strong style="color: #58a6ff;">状态</strong> — 确保实例处于"运行中"状态</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">6</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F464; 步骤6：创建相关账号</div>
+            <div class="step-content">
+              <p>在RDS控制台左侧菜单选择 <strong>"账号管理"</strong> → 单击 <strong>"创建账号"</strong>：</p>
+              <ul style="color: #8b949e; font-size: 14px; padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+                <li>设置数据库账号名称（如：<span class="inline-code">app_user</span>）</li>
+                <li>设置账号密码（需满足云平台强度要求）</li>
+                <li>选择账号类型：高权限账号或普通账号</li>
+                <li>高级权限账号可创建多个数据库和普通账号</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">7</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F511; 步骤7：登录数据库</div>
+            <div class="step-content">
+              <p>通过阿里云DMS（数据管理服务）Web终端直接登录：在实例详情页单击 <strong>"登录数据库"</strong>，输入创建的账号密码即可在线管理。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">8</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F30F; 步骤8：申请外网地址</div>
+            <div class="step-content">
+              <p>在实例详情页 <strong>"数据库连接"</strong> 区域，单击 <strong>"申请外网地址"</strong>。系统将为实例分配一个公网可访问的域名和端口号。</p>
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 安全提示：</strong>外网地址仅用于开发和测试环境，生产环境建议使用内网连接并关闭外网地址以降低安全风险。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">9</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4E1; 步骤9：Ping测试外网地址</div>
+            <div class="step-content">
+              <p>在本地终端执行ping命令测试网络连通性：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'ping your-instance.mysql.rds.aliyuncs.com\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>ping your-instance.mysql.rds.aliyuncs.com</code></pre></div>
+              </div>
+              <p>确认网络延迟和丢包率在可接受范围内。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item step-line-expand">
+          <div class="step-num step-num-expand">10</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F6E1;&#xFE0F; 步骤10：设置白名单</div>
+            <div class="step-content">
+              <p>在RDS控制台左侧选择 <strong>"白名单与安全组"</strong>，将允许访问的客户端IP地址添加到白名单中。默认只有白名单内的IP才能连接RDS实例。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num step-num-expand">11</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4BB; 步骤11：使用客户端工具测试连接</div>
+            <div class="step-content">
+              <p>使用Navicat、DBeaver或MySQL命令行客户端，填入RDS实例的外网地址、端口号、用户名和密码，测试连接。连接成功后即可进行数据库操作。</p>
+              <div class="step-note note-success">
+                <strong>&#x2705; 验证：</strong>能够成功在客户端工具中查看RDS上的数据库列表，并能执行增删改查操作，说明配置完整正确。
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== 任务6-7 ========== -->
+    <section id="task6-7" class="task-card">
+      <div class="task-header">
+        <div class="task-icon">&#x1F4DD;</div>
+        <div class="task-header-text">
+          <h2>任务6-7 MySQL及阿里云RDS数据库运维任务</h2>
+          <div class="task-header-meta">
+            <span class="task-badge badge-practice">&#x1F4DD; 实训</span>
+            <span class="task-badge badge-practice">&#x23F1; 约30分钟</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-desc">
+        <p>数据库运维需要持续关注慢查询日志，帮助定位可能存在问题的SQL语句，及时发现性能瓶颈并进行针对性优化。</p>
+      </div>
+      <div class="task-steps">
+
+        <!-- 步骤1 -->
+        <div class="step-item step-line-practice">
+          <div class="step-num step-num-practice">1</div>
+          <div class="step-body">
+            <div class="step-title">&#x26A1; 步骤1：开启慢查询日志</div>
+            <div class="step-content">
+              <p>开启MySQL慢查询日志功能，设置合理的长查询时间阈值：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'set global slow_query_log=on;\nshow global variables like \'%slow_query_log%\';\nshow global variables like \'%long_query_time%\';\nset global long_query_time=3;\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>set global slow_query_log=on;
+show global variables like '%slow_query_log%';
+show global variables like '%long_query_time%';
+set global long_query_time=3;</code></pre></div>
+              </div>
+              <div class="step-note note-info">
+                <strong>&#x1F4CC; 说明：</strong><span class="inline-code">long_query_time=3</span> 表示执行时间超过3秒的SQL语句会被记录到慢查询日志中。可根据实际业务场景调整此阈值。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="step-item step-line-practice">
+          <div class="step-num step-num-practice">2</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F4CB; 步骤2：获取慢查询语句</div>
+            <div class="step-content">
+              <p>使用mysqldumpslow工具分析慢查询日志：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">bash</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'mysqldumpslow -s at mysql-slow.log\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>mysqldumpslow -s at mysql-slow.log</code></pre></div>
+              </div>
+
+              <p>结果字段说明：</p>
+              <table class="param-table">
+                <tr><th>字段</th><th>说明</th></tr>
+                <tr><td>Count</td><td>该SQL语句执行次数</td></tr>
+                <tr><td>Time</td><td>累计/平均执行时间</td></tr>
+                <tr><td>Lock</td><td>锁等待时间</td></tr>
+                <tr><td>Rows</td><td>扫描的行数</td></tr>
+              </table>
+
+              <div class="step-note note-warn">
+                <strong>&#x26A0;&#xFE0F; 关注指标：</strong>优先关注 <strong>Count × Time</strong> 乘积最大的SQL，这些对系统整体性能影响最大。Rows值大说明扫描行数多，通常需要创建索引优化。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="step-item step-line-practice">
+          <div class="step-num step-num-practice">3</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F50D; 步骤3：查看执行计划</div>
+            <div class="step-content">
+              <p>对识别出的慢查询SQL使用EXPLAIN分析执行计划：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'explain select * from sbtest1 where c=\'77406798434-05209482854-78203775726-01623148710-50397331930-74600067895-344337286377-60995103231-28127739989-55887467999\';\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>explain select * from sbtest1
+where c='77406798434-05209482854-78203775726-01623148710-
+50397331930-74600067895-344337286377-60995103231-
+28127739989-55887467999';</code></pre></div>
+              </div>
+              <p>观察 <span class="inline-code">type</span>（访问类型）、<span class="inline-code">rows</span>（扫描行数）、<span class="inline-code">Extra</span>（额外信息）等关键字段。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="step-item">
+          <div class="step-num step-num-practice">4</div>
+          <div class="step-body">
+            <div class="step-title">&#x1F528; 步骤4：根据执行计划优化</div>
+            <div class="step-content">
+              <p>如果EXPLAIN显示type=ALL（全表扫描），为查询列添加索引：</p>
+              <div class="code-block">
+                <div class="code-header">
+                  <span class="code-lang">sql</span>
+                  <button class="copy-btn" onclick="copyCode(this, 'create index index_c on sbtest1(c);\n')">&#x1F4CB; 复制</button>
+                </div>
+                <div class="code-content"><pre><code>create index index_c on sbtest1(c);</code></pre></div>
+              </div>
+
+              <div class="step-note note-success">
+                <strong>&#x2705; 最佳实践：</strong><br>
+                1. 持续监控慢查询日志，建立优化工作流<br>
+                2. 创建索引后再次EXPLAIN确认type变为ref或const<br>
+                3. 注意索引维护成本，避免过多冗余索引<br>
+                4. 对于阿里云RDS，可在控制台直接查看慢查询统计和SQL洞察
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+function copyCode(btn, code) {
+  navigator.clipboard.writeText(code).then(function() {
+    var origText = btn.innerHTML;
+    btn.innerHTML = '&#x2705; 已复制';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.innerHTML = origText;
+      btn.classList.remove('copied');
+    }, 1500);
+  }).catch(function() {
+    var textarea = document.createElement('textarea');
+    textarea.value = code;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      var origText = btn.innerHTML;
+      btn.innerHTML = '&#x2705; 已复制';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.innerHTML = origText;
+        btn.classList.remove('copied');
+      }, 1500);
+    } catch(e) {}
+    document.body.removeChild(textarea);
+  });
+}
+</script>
+
+</body>
+</html>
