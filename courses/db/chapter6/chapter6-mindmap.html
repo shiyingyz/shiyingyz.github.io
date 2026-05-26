@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目六：监控、测试并优化 MySQL 性能 · 知识结构图</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-card: #161b22;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-orange: #d29922;
+  --accent-red: #f85149;
+  --accent-purple: #a371f7;
+  --accent-cyan: #39d2c0;
+  --border: #30363d;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ========== Navbar ========== */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(22,27,34,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.navbar .brand {
+  font-size: 16px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.navbar .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.navbar .nav-links a {
+  color: var(--text-secondary); text-decoration: none;
+  padding: 6px 14px; border-radius: 6px; font-size: 13px;
+  transition: all 0.2s; white-space: nowrap;
+}
+.navbar .nav-links a:hover { color: var(--accent-blue); background: rgba(88,166,255,0.08); }
+.navbar .nav-links a.active { color: var(--accent-blue); background: rgba(88,166,255,0.12); }
+
+/* ========== Main Content ========== */
+.main-content { padding-top: 80px; padding-bottom: 40px; }
+
+/* Section titles */
+.section-title {
+  text-align: center; margin: 24px 0 12px; font-size: 22px; font-weight: 700;
+}
+.section-subtitle {
+  text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 14px;
+}
+
+/* ========== SVG Mindmap Container ========== */
+.mindmap-container {
+  width: 100%; height: 800px;
+  background: radial-gradient(ellipse at center, #161b22 0%, #0d1117 70%);
+  border: 1px solid var(--border); border-radius: 12px;
+  margin: 0 auto 40px; max-width: 1400px;
+  position: relative; overflow: hidden; cursor: grab;
+}
+.mindmap-container:active { cursor: grabbing; }
+.mindmap-container svg { width: 100%; height: 100%; display: block; }
+
+/* SVG node styles */
+.mindmap-node { cursor: pointer; transition: transform 0.3s ease; }
+.mindmap-node:hover { filter: brightness(1.2); }
+.mindmap-node text { pointer-events: none; user-select: none; }
+.mindmap-link { stroke-opacity: 0.4; transition: stroke-opacity 0.3s; }
+.mindmap-link:hover { stroke-opacity: 0.8; }
+
+/* Tooltip */
+.tooltip {
+  position: absolute; pointer-events: none; z-index: 999;
+  background: rgba(22,27,34,0.97); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 13px;
+  max-width: 320px; opacity: 0; transition: opacity 0.2s;
+  color: var(--text-primary); box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .tt-title { font-weight: 700; margin-bottom: 4px; }
+.tooltip .tt-desc { color: var(--text-secondary); font-size: 12px; }
+
+/* Zoom controls */
+.zoom-controls {
+  position: absolute; bottom: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 6px; z-index: 100;
+}
+.zoom-controls button {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-primary); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.zoom-controls button:hover { background: rgba(88,166,255,0.15); border-color: var(--accent-blue); }
+.zoom-info {
+  text-align: center; font-size: 11px; color: var(--text-secondary); padding: 4px 0;
+}
+
+/* ========== Timeline ========== */
+.timeline-section { max-width: 1400px; margin: 0 auto 40px; padding: 0 20px; }
+.timeline-title {
+  text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 24px;
+  color: var(--accent-cyan);
+}
+.timeline { display: flex; align-items: center; gap: 0; position: relative; }
+.timeline::before {
+  content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green), var(--accent-orange));
+  transform: translateY(-50%); border-radius: 2px;
+}
+.timeline-item {
+  flex: 1; position: relative; text-align: center; padding: 32px 8px 8px; min-width: 0;
+}
+.timeline-dot {
+  width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--bg-primary);
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 2; transition: all 0.3s ease;
+}
+.timeline-item:hover .timeline-dot { transform: translate(-50%, -50%) scale(1.5); box-shadow: 0 0 16px currentColor; }
+.timeline-label {
+  margin-top: 28px; font-size: 12px; font-weight: 600; color: var(--text-primary);
+  line-height: 1.4;
+}
+.timeline-label .task-id { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+.timeline-label .task-name { display: block; }
+.timeline-label .task-type {
+  display: inline-block; margin-top: 4px; font-size: 10px; padding: 2px 8px;
+  border-radius: 10px; font-weight: 500;
+}
+.type-core { background: rgba(245,129,73,0.15); color: var(--accent-orange); }
+.type-extend { background: rgba(163,113,247,0.15); color: var(--accent-purple); }
+.type-practice { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+
+/* ========== EXPLAIN Type Chart ========== */
+.explain-section { max-width: 1400px; margin: 0 auto 40px; padding: 0 20px; }
+.explain-title {
+  text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 8px;
+}
+.explain-subtitle {
+  text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 14px;
+}
+.explain-chart {
+  display: flex; align-items: stretch; gap: 0; position: relative;
+  height: 120px; margin-bottom: 8px;
+}
+.explain-bar {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; cursor: pointer;
+  transition: all 0.3s ease; position: relative;
+}
+.explain-bar:hover { transform: scaleY(1.08); z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.explain-bar:first-child { border-radius: 8px 0 0 8px; }
+.explain-bar:last-child { border-radius: 0 8px 8px 0; }
+.explain-labels {
+  display: flex; gap: 0;
+}
+.explain-label-item {
+  flex: 1; text-align: center; font-size: 11px; color: var(--text-secondary); padding: 6px 4px;
+}
+
+/* ========== Animations ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.fade-in { animation: fadeInUp 0.6s ease forwards; }
+.fade-in-1 { animation-delay: 0.1s; }
+.fade-in-2 { animation-delay: 0.2s; }
+.fade-in-3 { animation-delay: 0.3s; }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .mindmap-container { height: 500px; }
+  .navbar .brand { font-size: 13px; }
+  .navbar .nav-links a { font-size: 11px; padding: 4px 8px; }
+  .timeline { flex-direction: column; gap: 12px; }
+  .timeline::before { display: none; }
+  .timeline-item { padding: 8px; }
+  .timeline-dot { position: static; margin: 0 auto 8px; }
+  .explain-chart { height: 60px; }
+  .explain-bar { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <span class="brand">🗄️ 数据库运维与管理 · 项目六知识结构图</span>
+  <div class="nav-links">
+    <a href="chapter6-guide.html">📖 指导书</a>
+    <a href="chapter6-manual.html">📘 操作手册</a>
+    <a href="chapter6-mindmap.html" class="active">🧠 知识结构图</a>
+    <a href="chapter6-summary.html">✅ 小结自测</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- Section Header -->
+  <h1 class="section-title">项目六：监控、测试并优化 MySQL 性能</h1>
+  <p class="section-subtitle">知识结构图与思维导图 —— 交互式学习导览</p>
+
+  <!-- ========== SVG Mindmap ========== -->
+  <div class="mindmap-container fade-in" id="mindmapContainer">
+    <svg id="mindmapSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="tooltip" id="tooltip">
+      <div class="tt-title" id="ttTitle"></div>
+      <div class="tt-desc" id="ttDesc"></div>
+    </div>
+    <div class="zoom-controls">
+      <button onclick="zoomIn()" title="放大">+</button>
+      <div class="zoom-info" id="zoomInfo">100%</div>
+      <button onclick="zoomOut()" title="缩小">−</button>
+      <button onclick="resetView()" title="重置">⌂</button>
+    </div>
+  </div>
+
+  <!-- ========== Timeline ========== -->
+  <div class="timeline-section fade-in fade-in-1">
+    <h2 class="timeline-title">📋 学习路径时间线</h2>
+    <div class="timeline" style="overflow-x:auto;padding-bottom:8px;">
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-orange);color:var(--accent-orange);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-1</span>
+          <span class="task-name">安装监控工具</span>
+          <span class="task-type type-core">核心任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-blue);color:var(--accent-blue);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-2</span>
+          <span class="task-name">性能调优</span>
+          <span class="task-type type-core">核心任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-purple);color:var(--accent-purple);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-3</span>
+          <span class="task-name">压力测试</span>
+          <span class="task-type type-extend">拓展任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-green);color:var(--accent-green);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-4</span>
+          <span class="task-name">单表优化</span>
+          <span class="task-type type-core">核心任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-cyan);color:var(--accent-cyan);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-5</span>
+          <span class="task-name">多表优化</span>
+          <span class="task-type type-extend">拓展任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-red);color:var(--accent-red);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-6</span>
+          <span class="task-name">云数据库</span>
+          <span class="task-type type-extend">拓展任务</span>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent-blue);color:var(--accent-blue);"></div>
+        <div class="timeline-label">
+          <span class="task-id">任务 6-7</span>
+          <span class="task-name">运维实战</span>
+          <span class="task-type type-practice">实训任务</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== EXPLAIN Type Chart ========== -->
+  <div class="explain-section fade-in fade-in-2">
+    <h2 class="explain-title">📊 EXPLAIN type 字段等级图</h2>
+    <p class="explain-subtitle">从最差到最优的访问类型 — 点击查看详情</p>
+    <div class="explain-chart" id="explainChart">
+      <div class="explain-bar" style="background:#f85149;color:#fff;" data-desc="全表扫描，性能最差，需重点优化">ALL</div>
+      <div class="explain-bar" style="background:#f0883e;color:#fff;" data-desc="索引全扫描，比全表扫描略好但仍需优化">index</div>
+      <div class="explain-bar" style="background:#d29922;color:#0d1117;" data-desc="索引范围扫描，出现在 <、>、BETWEEN、IN 等操作中">range</div>
+      <div class="explain-bar" style="background:#8bc34a;color:#0d1117;" data-desc="非唯一索引扫描，找到满足条件的第一行后继续扫描">ref</div>
+      <div class="explain-bar" style="background:#4caf50;color:#fff;" data-desc="唯一索引扫描，对于每个索引键最多匹配一行">eq_ref</div>
+      <div class="explain-bar" style="background:#2196f3;color:#fff;" data-desc="常量匹配，通过主键或唯一索引等值查询">const</div>
+      <div class="explain-bar" style="background:#58a6ff;color:#fff;" data-desc="system 是 const 的特例，表仅有一行数据">system</div>
+    </div>
+    <div class="explain-labels">
+      <div class="explain-label-item">❌ 最差</div>
+      <div class="explain-label-item"></div>
+      <div class="explain-label-item"></div>
+      <div class="explain-label-item"></div>
+      <div class="explain-label-item"></div>
+      <div class="explain-label-item"></div>
+      <div class="explain-label-item">✅ 最优</div>
+    </div>
+    <div id="explainDetail" style="text-align:center;margin-top:12px;min-height:24px;color:var(--text-secondary);font-size:13px;transition:all 0.3s;"></div>
+  </div>
+
+</div>
+
+<!-- ========== SVG Mindmap Script ========== -->
+<script>
+(function() {
+  // ---- Data ----
+  const data = {
+    id: 'root',
+    label: 'MySQL\n性能优化',
+    color: '#58a6ff',
+    isCenter: true,
+    desc: '监控、测试、优化 MySQL 数据库性能的完整知识体系',
+    children: [
+      {
+        id: 'b1', label: '性能监控', color: '#3fb950',
+        desc: '监控数据库运行状态的关键指标',
+        children: [
+          { id: 'b1-1', label: 'QPS', desc: '每秒执行的SQL查询次数，衡量读负载', color: '#3fb950' },
+          { id: 'b1-2', label: 'TPS', desc: '每秒完成的事务数，衡量写负载', color: '#3fb950' },
+          { id: 'b1-3', label: '连接数', desc: '当前数据库连接数，反映并发规模', color: '#3fb950' },
+          { id: 'b1-4', label: '缓冲池命中率', desc: 'InnoDB缓冲池命中比例，建议>95%', color: '#3fb950' },
+          { id: 'b1-5', label: '线程状态', desc: '活动线程与睡眠线程的分布', color: '#3fb950' },
+          { id: 'b1-6', label: '流量指标', desc: 'InnoDB磁盘读写流量(bytes)', color: '#3fb950' }
+        ]
+      },
+      {
+        id: 'b2', label: '监控工具', color: '#d29922',
+        desc: '使用各种工具监控MySQL',
+        children: [
+          {
+            id: 'b2-1', label: 'mysqladmin', desc: '命令行监控工具',
+            color: '#d29922',
+            children: [
+              { id: 'b2-1-1', label: 'status', desc: 'mysqladmin -u root -p status — 查看基本状态', color: '#d29922' },
+              { id: 'b2-1-2', label: 'extended-status', desc: 'mysqladmin -u root -p extended-status — 查看扩展状态变量', color: '#d29922' }
+            ]
+          },
+          {
+            id: 'b2-2', label: 'MONyog', desc: '图形化监控工具',
+            color: '#d29922',
+            children: [
+              { id: 'b2-2-1', label: '安装配置', desc: '下载安装MONyog并配置监控目标', color: '#d29922' },
+              { id: 'b2-2-2', label: 'Dashboard', desc: '通过仪表盘直观查看各项指标', color: '#d29922' },
+              { id: 'b2-2-3', label: '实时告警', desc: '设置阈值，异常时自动发送告警', color: '#d29922' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'b3', label: '压力测试', color: '#a371f7',
+        desc: '模拟高并发场景测试数据库性能',
+        children: [
+          {
+            id: 'b3-1', label: 'mysqlslap', desc: 'MySQL自带压力测试工具',
+            color: '#a371f7',
+            children: [
+              { id: 'b3-1-1', label: '模拟并发', desc: '使用--concurrency参数模拟多个并发客户端', color: '#a371f7' },
+              { id: 'b3-1-2', label: '自动建表', desc: '自动生成测试表，无需手动准备数据', color: '#a371f7' }
+            ]
+          },
+          {
+            id: 'b3-2', label: 'Sysbench', desc: '跨平台模块化基准测试工具',
+            color: '#a371f7',
+            children: [
+              { id: 'b3-2-1', label: 'oltp_read_write', desc: '读写混合负载测试脚本', color: '#a371f7' },
+              { id: 'b3-2-2', label: '三阶段流程', desc: 'prepare准备数据 → run执行测试 → cleanup清理数据', color: '#a371f7' },
+              { id: 'b3-2-3', label: '核心指标', desc: 'TPS、QPS、延迟(ms)、95%分位延迟', color: '#a371f7' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'b4', label: 'SQL优化\n(EXPLAIN)', color: '#39d2c0',
+        desc: '使用EXPLAIN分析SQL执行计划',
+        children: [
+          {
+            id: 'b4-1', label: '关键字段', desc: 'EXPLAIN输出的核心字段解读',
+            color: '#39d2c0',
+            children: [
+              { id: 'b4-1-1', label: 'type', desc: 'ALL→index→range→ref→eq_ref→const — 从差到好', color: '#39d2c0' },
+              { id: 'b4-1-2', label: 'key', desc: '实际使用的索引名称', color: '#39d2c0' },
+              { id: 'b4-1-3', label: 'rows', desc: '预估需要扫描的行数', color: '#39d2c0' },
+              { id: 'b4-1-4', label: 'Extra', desc: 'Using filesort(需优化) / Using index(优秀)', color: '#39d2c0' }
+            ]
+          },
+          {
+            id: 'b4-2', label: '单表优化', desc: '单表查询优化策略',
+            color: '#39d2c0',
+            children: [
+              { id: 'b4-2-1', label: '最左前缀', desc: '联合索引遵循最左前缀原则', color: '#39d2c0' },
+              { id: 'b4-2-2', label: '范围查询', desc: '避免范围查询阻断后续索引列的使用', color: '#39d2c0' }
+            ]
+          },
+          {
+            id: 'b4-3', label: '多表优化', desc: '多表关联查询优化',
+            color: '#39d2c0',
+            children: [
+              { id: 'b4-3-1', label: 'LEFT JOIN', desc: 'LEFT JOIN优化右表(被驱动表)', color: '#39d2c0' },
+              { id: 'b4-3-2', label: 'RIGHT JOIN', desc: 'RIGHT JOIN优化左表(被驱动表)', color: '#39d2c0' },
+              { id: 'b4-3-3', label: 'INNER JOIN', desc: '原理同LEFT JOIN，自动选择驱动表', color: '#39d2c0' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'b5', label: '索引优化', color: '#58a6ff',
+        desc: '索引设计与优化策略',
+        children: [
+          { id: 'b5-1', label: 'B+Tree原理', desc: 'B+树结构保证有序存储与高效查询', color: '#58a6ff' },
+          { id: 'b5-2', label: '最左前缀', desc: '联合索引等值/范围查询遵循最左匹配', color: '#58a6ff' },
+          { id: 'b5-3', label: '覆盖索引', desc: '查询列全部在索引中，无需回表', color: '#58a6ff' },
+          { id: 'b5-4', label: '避免失效', desc: '避免在索引列上运算、使用函数、LIKE以%开头', color: '#58a6ff' }
+        ]
+      },
+      {
+        id: 'b6', label: '参数调优', color: '#f85149',
+        desc: 'MySQL关键配置参数优化',
+        children: [
+          { id: 'b6-1', label: 'buffer_pool_size', desc: 'InnoDB缓冲池大小，建议物理内存40%~80%', color: '#f85149' },
+          { id: 'b6-2', label: 'tmp_table_size', desc: '临时表大小，确保Created_tmp_disk_tables比例<25%', color: '#f85149' },
+          { id: 'b6-3', label: 'max_connections', desc: '最大连接数，根据业务并发量设置', color: '#f85149' },
+          { id: 'b6-4', label: 'key_buffer_size', desc: 'MyISAM键缓冲大小', color: '#f85149' }
+        ]
+      },
+      {
+        id: 'b7', label: '云数据库', color: '#a371f7',
+        desc: '阿里云RDS MySQL使用指南',
+        children: [
+          { id: 'b7-1', label: '申请试用', desc: '在阿里云控制台申请RDS MySQL试用实例', color: '#a371f7' },
+          { id: 'b7-2', label: '白名单', desc: '设置IP白名单，允许客户端访问', color: '#a371f7' },
+          { id: 'b7-3', label: '外网地址', desc: '申请外网连接地址用于远程访问', color: '#a371f7' },
+          { id: 'b7-4', label: '账号管理', desc: '创建和管理数据库账号', color: '#a371f7' }
+        ]
+      },
+      {
+        id: 'b8', label: '运维实战', color: '#3fb950',
+        desc: '慢查询定位与优化实战流程',
+        children: [
+          { id: 'b8-1', label: '慢查询日志', desc: 'slow_query_log=ON 开启慢查询日志', color: '#3fb950' },
+          { id: 'b8-2', label: '阈值设置', desc: 'long_query_time 设置慢查询时间阈值(秒)', color: '#3fb950' },
+          { id: 'b8-3', label: 'mysqldumpslow', desc: '分析慢查询日志的命令行工具', color: '#3fb950' },
+          { id: 'b8-4', label: '优化流程', desc: '定位慢SQL → EXPLAIN分析 → 索引优化 → 验证效果', color: '#3fb950' }
+        ]
+      }
+    ]
+  };
+
+  // ---- SVG Setup ----
+  const container = document.getElementById('mindmapContainer');
+  const svg = document.getElementById('mindmapSvg');
+  const tooltip = document.getElementById('tooltip');
+  const ttTitle = document.getElementById('ttTitle');
+  const ttDesc = document.getElementById('ttDesc');
+  const zoomInfo = document.getElementById('zoomInfo');
+
+  // SVG namespace
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // Transform state
+  let scale = 1;
+  let translateX = 0, translateY = 0;
+  let isDragging = false;
+  let dragStartX, dragStartY, dragLastTX, dragLastTY;
+
+  // Layout state
+  let collapsedNodes = new Set();
+  const level1Radius = 280; // distance from center to level 1
+  const level2Radius = 140; // distance from level1 to children
+  const level3Radius = 100;
+
+  function createG(id) {
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('id', id);
+    g.setAttribute('class', 'mindmap-node');
+    return g;
+  }
+
+  function createRect(x, y, w, h, rx, color, isCenter) {
+    const rect = document.createElementNS(NS, 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', w); rect.setAttribute('height', h);
+    rect.setAttribute('rx', rx || 8);
+    if (isCenter) {
+      rect.setAttribute('fill', 'url(#centerGrad)');
+      rect.setAttribute('stroke', '#58a6ff');
+      rect.setAttribute('stroke-width', '2');
+    } else {
+      rect.setAttribute('fill', color);
+      rect.setAttribute('fill-opacity', '0.15');
+      rect.setAttribute('stroke', color);
+      rect.setAttribute('stroke-width', '1');
+    }
+    return rect;
+  }
+
+  function createText(x, y, text, color, fontSize, isCenter) {
+    const lines = text.split('\n');
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('fill', color || '#e6edf3');
+    t.setAttribute('font-size', fontSize || '12');
+    t.setAttribute('font-weight', isCenter ? '700' : '500');
+    t.setAttribute('font-family', '-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif');
+    t.setAttribute('dominant-baseline', 'middle');
+    lines.forEach((line, i) => {
+      const tsp = document.createElementNS(NS, 'tspan');
+      tsp.setAttribute('x', x);
+      tsp.setAttribute('dy', i === 0 ? '0' : '1.2em');
+      tsp.textContent = line;
+      t.appendChild(tsp);
+    });
+    return t;
+  }
+
+  function createCurve(x1, y1, x2, y2, color) {
+    const path = document.createElementNS(NS, 'path');
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const cx1 = x1 + dx * 0.5;
+    const cy1 = y1;
+    const cx2 = x2 - dx * 0.3;
+    const cy2 = y2;
+    const d = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('class', 'mindmap-link');
+    return path;
+  }
+
+  function getNodeWidth(label) {
+    const lines = label.split('\n');
+    const maxLen = Math.max(...lines.map(l => l.length));
+    return Math.max(60, maxLen * 12 + 16);
+  }
+
+  function getNodeHeight(label) {
+    return (label.split('\n').length) * 18 + 12;
+  }
+
+  // Color mapping for branch indices
+  const branchColors = [
+    '#3fb950', '#d29922', '#a371f7', '#39d2c0',
+    '#58a6ff', '#f85149', '#a371f7', '#3fb950'
+  ];
+
+  function renderMindmap() {
+    // Clear SVG
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // Create defs for gradient
+    const defs = document.createElementNS(NS, 'defs');
+    const grad = document.createElementNS(NS, 'linearGradient');
+    grad.setAttribute('id', 'centerGrad');
+    grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%');
+    grad.setAttribute('x2', '100%'); grad.setAttribute('y2', '100%');
+    ['#58a6ff', '#1f6feb'].forEach((c, i) => {
+      const stop = document.createElementNS(NS, 'stop');
+      stop.setAttribute('offset', (i * 100) + '%');
+      stop.setAttribute('stop-color', c);
+      grad.appendChild(stop);
+    });
+    defs.appendChild(grad);
+
+    // Arrow marker
+    const marker = document.createElementNS(NS, 'marker');
+    marker.setAttribute('id', 'arrow');
+    marker.setAttribute('viewBox', '0 0 10 10');
+    marker.setAttribute('refX', '10');
+    marker.setAttribute('refY', '5');
+    marker.setAttribute('markerWidth', '6');
+    marker.setAttribute('markerHeight', '6');
+    marker.setAttribute('orient', 'auto');
+    const arrowPath = document.createElementNS(NS, 'path');
+    arrowPath.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+    arrowPath.setAttribute('fill', '#8b949e');
+    marker.appendChild(arrowPath);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    // Main group with transform
+    const mainG = document.createElementNS(NS, 'g');
+    mainG.setAttribute('transform', `translate(${translateX},${translateY}) scale(${scale})`);
+    mainG.setAttribute('id', 'mainGroup');
+    svg.appendChild(mainG);
+
+    // Center of SVG
+    const cx = 700, cy = 400;
+
+    // Render center node
+    renderNode(mainG, data, cx, cy, true, 0, 0);
+
+    // Recursive render
+    function renderNode(parentG, node, x, y, isCenter, parentX, parentY) {
+      const w = getNodeWidth(node.label);
+      const h = getNodeHeight(node.label);
+      const nx = x - w / 2, ny = y - h / 2;
+
+      // Connection line from parent
+      if (!isCenter) {
+        const curve = createCurve(parentX, parentY, x, y, node.color);
+        parentG.appendChild(curve);
+      }
+
+      // Node group
+      const ng = createG(node.id);
+      ng.setAttribute('data-id', node.id);
+      ng.setAttribute('data-label', node.label.replace(/\n/g, ' '));
+      ng.setAttribute('data-desc', node.desc || '');
+      ng.setAttribute('data-color', node.color);
+
+      const rect = createRect(nx, ny, w, h, isCenter ? 16 : 8, node.color, isCenter);
+      ng.appendChild(rect);
+
+      const textColor = isCenter ? '#ffffff' : '#e6edf3';
+      const text = createText(x, y, node.label, textColor, isCenter ? 14 : 11, isCenter);
+      ng.appendChild(text);
+
+      // Click handler
+      ng.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (node.children && node.children.length > 0) {
+          toggleCollapse(node.id);
+        }
+      });
+
+      // Hover handlers
+      ng.addEventListener('mouseenter', (e) => {
+        if (node.desc) {
+          ttTitle.textContent = node.label.replace(/\n/g, ' ');
+          ttDesc.textContent = node.desc;
+          tooltip.classList.add('visible');
+        }
+      });
+      ng.addEventListener('mousemove', (e) => {
+        const rect2 = container.getBoundingClientRect();
+        tooltip.style.left = (e.clientX - rect2.left + 16) + 'px';
+        tooltip.style.top = (e.clientY - rect2.top + 16) + 'px';
+      });
+      ng.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+
+      parentG.appendChild(ng);
+
+      // Render children
+      if (node.children && node.children.length > 0 && !collapsedNodes.has(node.id)) {
+        const childCount = node.children.length;
+        const isLevel1 = isCenter;
+
+        node.children.forEach((child, i) => {
+          let childX, childY;
+
+          if (isLevel1) {
+            // Level 1: radial layout around center
+            const angleStep = (2 * Math.PI) / childCount;
+            const angle = angleStep * i - Math.PI / 2 + (Math.random() * 0.15 - 0.075);
+            childX = cx + Math.cos(angle) * level1Radius;
+            childY = cy + Math.sin(angle) * level1Radius;
+          } else {
+            // Level 2+: tree layout
+            const startAngle = Math.atan2(y - cy, x - cx);
+            const totalSpread = Math.min(Math.PI * 0.8, childCount * 0.5);
+            const step = totalSpread / Math.max(childCount - 1, 1);
+            const offset = -(totalSpread / 2);
+            const angle = startAngle + offset + i * step;
+            const dist = node.children && node.children[0] && node.children[0].children ? level3Radius : level2Radius;
+            childX = x + Math.cos(angle) * dist;
+            childY = y + Math.sin(angle) * dist;
+          }
+
+          renderNode(mainG, child, childX, childY, false, x, y);
+        });
+      }
+    }
+  }
+
+  function toggleCollapse(nodeId) {
+    if (collapsedNodes.has(nodeId)) {
+      collapsedNodes.delete(nodeId);
+    } else {
+      collapsedNodes.add(nodeId);
+    }
+    renderMindmap();
+  }
+
+  function applyTransform() {
+    const mainG = document.getElementById('mainGroup');
+    if (mainG) {
+      mainG.setAttribute('transform', `translate(${translateX},${translateY}) scale(${scale})`);
+    }
+    zoomInfo.textContent = Math.round(scale * 100) + '%';
+  }
+
+  function zoomIn() {
+    scale = Math.min(3, scale + 0.15);
+    applyTransform();
+  }
+  function zoomOut() {
+    scale = Math.max(0.3, scale - 0.15);
+    applyTransform();
+  }
+  function resetView() {
+    scale = 1; translateX = 0; translateY = 0;
+    applyTransform();
+  }
+
+  // Make zoom accessible from inline buttons
+  window.zoomIn = zoomIn;
+  window.zoomOut = zoomOut;
+  window.resetView = resetView;
+
+  // Drag
+  container.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.mindmap-node') || e.target.closest('.zoom-controls')) return;
+    isDragging = true;
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    dragLastTX = translateX; dragLastTY = translateY;
+    container.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    translateX = dragLastTX + (e.clientX - dragStartX);
+    translateY = dragLastTY + (e.clientY - dragStartY);
+    applyTransform();
+  });
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    container.style.cursor = 'grab';
+  });
+
+  // Scroll zoom
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+    const newScale = Math.max(0.3, Math.min(3, scale + delta));
+
+    // Zoom toward mouse position
+    const rect = container.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    translateX = translateX - (mx * (newScale - scale));
+    translateY = translateY - (my * (newScale - scale));
+    scale = newScale;
+    applyTransform();
+  });
+
+  // ---- EXPLAIN Chart Interaction ----
+  const explainDetail = document.getElementById('explainDetail');
+  document.querySelectorAll('.explain-bar').forEach(bar => {
+    bar.addEventListener('mouseenter', () => {
+      const desc = bar.getAttribute('data-desc');
+      explainDetail.textContent = bar.textContent + ' — ' + desc;
+      explainDetail.style.color = bar.style.background;
+    });
+    bar.addEventListener('mouseleave', () => {
+      explainDetail.textContent = '';
+    });
+    bar.addEventListener('click', () => {
+      const desc = bar.getAttribute('data-desc');
+      explainDetail.textContent = bar.textContent + ' — ' + desc;
+      explainDetail.style.color = bar.style.background;
+      explainDetail.style.fontWeight = '700';
+      setTimeout(() => {
+        explainDetail.style.fontWeight = '400';
+        explainDetail.style.color = 'var(--text-secondary)';
+        explainDetail.textContent = '';
+      }, 2000);
+    });
+  });
+
+  // ---- Initial Render ----
+  renderMindmap();
+})();
+</script>
+
+</body>
+</html>
