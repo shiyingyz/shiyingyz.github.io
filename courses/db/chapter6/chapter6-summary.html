@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目六小结与自测 - 数据库运维与管理</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-card: #161b22;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent-blue: #58a6ff;
+    --success-green: #3fb950;
+    --warning-orange: #d29922;
+    --danger-red: #f85149;
+    --purple: #a371f7;
+    --border: #30363d;
+    --code-font: Consolas, 'Fira Code', monospace;
+    --radius: 8px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    padding-top: 56px;
+  }
+
+  /* ========== Navigation ========== */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(13, 17, 23, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-brand {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .navbar-links {
+    display: flex;
+    gap: 6px;
+  }
+
+  .navbar-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+  }
+
+  .navbar-links a:hover {
+    color: var(--accent-blue);
+    background: rgba(88, 166, 255, 0.08);
+  }
+
+  .navbar-links a.active {
+    color: var(--accent-blue);
+    background: rgba(88, 166, 255, 0.12);
+  }
+
+  /* ========== Container ========== */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ========== Page Header ========== */
+  .page-header {
+    text-align: center;
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .page-header .pretitle {
+    font-size: 13px;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  /* ========== Section ========== */
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 48px 0 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title .icon {
+    font-size: 24px;
+  }
+
+  /* ========== Cards ========== */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent-blue);
+  }
+
+  .card h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h3 .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .card h3 .dot.blue { background: var(--accent-blue); }
+  .card h3 .dot.green { background: var(--success-green); }
+  .card h3 .dot.purple { background: var(--purple); }
+
+  /* ========== Knowledge Items ========== */
+  .knowledge-group {
+    margin-bottom: 24px;
+  }
+
+  .knowledge-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .knowledge-group h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 10px;
+    padding-left: 12px;
+    border-left: 3px solid var(--purple);
+  }
+
+  .knowledge-group ul {
+    list-style: none;
+    padding-left: 16px;
+  }
+
+  .knowledge-group li {
+    position: relative;
+    padding: 4px 0 4px 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .knowledge-group li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent-blue);
+  }
+
+  .knowledge-group li strong {
+    color: var(--text-primary);
+  }
+
+  /* ========== Table ========== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead th {
+    background: rgba(88, 166, 255, 0.08);
+    color: var(--accent-blue);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody td:first-child {
+    color: var(--warning-orange);
+    font-weight: 500;
+  }
+
+  /* ========== Code Blocks ========== */
+  .code-label {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    background: rgba(88, 166, 255, 0.1);
+    padding: 2px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: var(--code-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  pre code {
+    color: var(--success-green);
+  }
+
+  /* ========== Quiz Section ========== */
+  .quiz-section {
+    margin-top: 16px;
+  }
+
+  /* Multiple Choice */
+  .quiz-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 18px;
+    transition: border-color 0.3s ease;
+  }
+
+  .quiz-item .question {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  .quiz-item .question .qnum {
+    color: var(--accent-blue);
+    margin-right: 8px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: var(--text-secondary);
+    user-select: none;
+  }
+
+  .option:hover:not(.locked) {
+    border-color: var(--accent-blue);
+    background: rgba(88, 166, 255, 0.05);
+  }
+
+  .option .letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .option.correct {
+    border-color: var(--success-green);
+    background: rgba(63, 185, 80, 0.1);
+    color: var(--success-green);
+  }
+
+  .option.correct .letter {
+    background: var(--success-green);
+    border-color: var(--success-green);
+    color: #0d1117;
+  }
+
+  .option.wrong {
+    border-color: var(--danger-red);
+    background: rgba(248, 81, 73, 0.1);
+    color: var(--danger-red);
+  }
+
+  .option.wrong .letter {
+    background: var(--danger-red);
+    border-color: var(--danger-red);
+    color: #0d1117;
+  }
+
+  .option.locked {
+    cursor: default;
+    opacity: 0.85;
+  }
+
+  .explanation {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .explanation.show {
+    display: block;
+  }
+
+  .explanation.correct-expl {
+    background: rgba(63, 185, 80, 0.08);
+    border: 1px solid rgba(63, 185, 80, 0.25);
+    color: var(--success-green);
+  }
+
+  .explanation.wrong-expl {
+    background: rgba(248, 81, 73, 0.08);
+    border: 1px solid rgba(248, 81, 73, 0.25);
+    color: var(--danger-red);
+  }
+
+  .explanation .exp-label {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  /* Fill-in-the-blank */
+  .fill-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .fill-item .question {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .fill-item .question .qnum {
+    color: var(--purple);
+    margin-right: 8px;
+  }
+
+  .toggle-answer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--accent-blue);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-answer:hover {
+    border-color: var(--accent-blue);
+    background: rgba(88, 166, 255, 0.08);
+  }
+
+  .toggle-answer .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 10px;
+  }
+
+  .toggle-answer.open .arrow {
+    transform: rotate(90deg);
+  }
+
+  .answer-content {
+    margin-top: 14px;
+    padding: 16px;
+    background: rgba(163, 113, 247, 0.08);
+    border: 1px solid rgba(163, 113, 247, 0.3);
+    border-radius: 6px;
+    display: none;
+    animation: slideDown 0.3s ease;
+  }
+
+  .answer-content.show {
+    display: block;
+  }
+
+  .answer-content .answer-label {
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .answer-content p {
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ========== Study Tips ========== */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .tip-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .tip-card:hover {
+    border-color: var(--purple);
+    transform: translateY(-2px);
+  }
+
+  .tip-card .tip-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .tip-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .tip-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ========== Footer ========== */
+  .footer {
+    text-align: center;
+    padding: 32px 24px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+  }
+
+  .footer .credit {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .footer .credit a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+
+  .footer .credit a:hover {
+    text-decoration: underline;
+  }
+
+  /* ========== Animations ========== */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; max-height: 0; }
+    to { opacity: 1; max-height: 500px; }
+  }
+
+  /* ========== Responsive ========== */
+  @media (max-width: 768px) {
+    .navbar-brand { font-size: 13px; }
+    .navbar-links a { padding: 5px 8px; font-size: 11px; }
+    .page-header h1 { font-size: 24px; }
+    .container { padding: 20px 14px 40px; }
+    .card { padding: 18px; }
+    .tips-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ========== Scrollbar ========== */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== NAVIGATION ==================== -->
+<nav class="navbar">
+  <a href="chapter6-summary.html" class="navbar-brand">🗄️ 数据库运维与管理 · 项目六小结与自测</a>
+  <div class="navbar-links">
+    <a href="chapter6-guide.html">指导书</a>
+    <a href="chapter6-manual.html">操作手册</a>
+    <a href="chapter6-mindmap.html">知识结构图</a>
+    <a href="chapter6-summary.html" class="active">小结自测</a>
+  </div>
+</nav>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="pretitle">Database Operations &amp; Management</div>
+    <h1>项目六：监控、测试并优化 MySQL 性能</h1>
+    <p class="subtitle">项目小结与自我检测</p>
+  </div>
+
+  <!-- ==================== SECTION 1: 核心知识回顾 ==================== -->
+  <div class="section-title">
+    <span class="icon">📚</span> 项目总结
+  </div>
+
+  <div class="card">
+    <h3><span class="dot blue"></span>核心知识回顾</h3>
+
+    <div class="knowledge-group">
+      <h4>性能监控基础</h4>
+      <ul>
+        <li><strong>QPS</strong>（Queries Per Second）：每秒查询数，反映数据库查询处理能力</li>
+        <li><strong>TPS</strong>（Transactions Per Second）：每秒事务数，反映数据库事务处理能力</li>
+        <li><strong>缓冲池命中率</strong>：InnoDB 缓冲池命中比例，理想值 &gt; 99%</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>监控工具使用</h4>
+      <ul>
+        <li><strong>MONyog</strong>：图形化 MySQL 监控，Dashboard 查看 QPS / 连接数 / 缓冲池命中率</li>
+        <li><strong>mysqladmin</strong>：命令行工具，status / extended-status 命令</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>压力测试</h4>
+      <ul>
+        <li><strong>Sysbench 三阶段</strong>：prepare（准备数据）→ run（执行压测）→ cleanup（清理数据）</li>
+        <li><strong>关键指标</strong>：TPS、QPS、平均延迟、95% 分位延迟</li>
+        <li>注意修改并发线程数，多次测试取平均值</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>EXPLAIN 执行计划分析</h4>
+      <ul>
+        <li><strong>type 字段等级</strong>（从差到好）：ALL → index → range → ref → eq_ref → const</li>
+        <li><strong>key 字段</strong>：实际使用的索引</li>
+        <li><strong>rows 字段</strong>：预估扫描行数，越小越好</li>
+        <li><strong>Extra 字段</strong>：Using filesort（需要优化）/ Using index（覆盖索引，好现象）</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>索引优化原则</h4>
+      <ul>
+        <li>联合索引遵循<strong>最左前缀原则</strong></li>
+        <li>范围查询（&gt; &lt; &gt;= &lt;= BETWEEN LIKE）会<strong>阻断后续索引</strong></li>
+        <li>LEFT JOIN <strong>优化右表</strong>、RIGHT JOIN <strong>优化左表</strong></li>
+        <li>避免在索引列上做运算或使用函数</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>参数调优</h4>
+      <ul>
+        <li><strong>innodb_buffer_pool_size</strong>：调整为物理内存 40% ~ 80%</li>
+        <li><strong>tmp_table_size</strong>：监控 Created_tmp_disk_tables / Created_tmp_tables 比例 &lt; 25%</li>
+        <li><strong>long_query_time</strong>：设置慢查询阈值（建议 2-3 秒）</li>
+      </ul>
+    </div>
+
+    <div class="knowledge-group">
+      <h4>云数据库运维</h4>
+      <ul>
+        <li>阿里云 RDS 申请流程</li>
+        <li>白名单设置、外网地址申请</li>
+        <li>慢查询日志开启与分析</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 2: 常见问题排查清单 ==================== -->
+  <div class="card">
+    <h3><span class="dot green"></span>常见问题排查清单</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>问题现象</th>
+            <th>可能原因</th>
+            <th>排查方法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>查询缓慢</td>
+            <td>缺少索引 / 全表扫描</td>
+            <td>EXPLAIN 分析 type 字段</td>
+          </tr>
+          <tr>
+            <td>系统假死</td>
+            <td>锁等待 / 长事务</td>
+            <td>SHOW PROCESSLIST 查看</td>
+          </tr>
+          <tr>
+            <td>连接数满</td>
+            <td>max_connections 不足</td>
+            <td>调整参数或优化连接池</td>
+          </tr>
+          <tr>
+            <td>磁盘 IO 高</td>
+            <td>缓冲池太小</td>
+            <td>加大 innodb_buffer_pool_size</td>
+          </tr>
+          <tr>
+            <td>临时表过多</td>
+            <td>tmp_table_size 太小</td>
+            <td>监控比例，适当调大</td>
+          </tr>
+          <tr>
+            <td>ERROR 2013</td>
+            <td>连接超时</td>
+            <td>检查 wait_timeout 参数</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3: 命令速查表 ==================== -->
+  <div class="card">
+    <h3><span class="dot purple"></span>命令速查表</h3>
+
+    <div class="code-label">监控命令</div>
+    <pre><code>SHOW STATUS LIKE 'QPS%';
+SHOW STATUS LIKE 'Threads%';
+SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size%';
+SHOW GLOBAL STATUS WHERE variable_name IN ('Created_tmp_disk_tables','Created_tmp_tables');</code></pre>
+
+    <div class="code-label">EXPLAIN 命令</div>
+    <pre><code>EXPLAIN SELECT * FROM table WHERE condition\G</code></pre>
+
+    <div class="code-label">索引操作</div>
+    <pre><code>CREATE INDEX idx_name ON table(column);
+ALTER TABLE table ADD INDEX idx_name (col1, col2);
+DROP INDEX idx_name ON table;</code></pre>
+
+    <div class="code-label">压测命令</div>
+    <pre><code>sysbench --mysql-host=IP --mysql-port=PORT --mysql-user=USER --mysql-password=PASS \
+  --mysql-db=DB --table_size=25000 --tables=10 --threads=8 --time=60 \
+  oltp_read_write prepare|run|cleanup</code></pre>
+
+    <div class="code-label">慢查询</div>
+    <pre><code>SET GLOBAL slow_query_log=ON;
+SET GLOBAL long_query_time=3;
+mysqldumpslow -s at mysql-slow.log</code></pre>
+  </div>
+
+  <!-- ==================== SECTION 4: 自我检测 ==================== -->
+  <div class="section-title">
+    <span class="icon">📝</span> 自我检测
+  </div>
+
+  <div class="quiz-section">
+
+    <!-- ===== Multiple Choice Q1 ===== -->
+    <div class="quiz-item" id="quiz1">
+      <div class="question"><span class="qnum">Q1.</span>EXPLAIN 结果中 type=ALL 和 type=ref 的含义是什么？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz1', this, false)">
+          <span class="letter">A</span> ALL 表示索引扫描，ref 表示全表扫描
+        </div>
+        <div class="option" onclick="selectAnswer('quiz1', this, true)">
+          <span class="letter">B</span> ALL 表示全表扫描，ref 表示通过索引引用
+        </div>
+        <div class="option" onclick="selectAnswer('quiz1', this, false)">
+          <span class="letter">C</span> ALL 和 ref 都是索引扫描
+        </div>
+        <div class="option" onclick="selectAnswer('quiz1', this, false)">
+          <span class="letter">D</span> ALL 表示只使用缓存，ref 表示使用临时表
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz1">
+        <div class="exp-label">✓ 解析：</div>
+        type=ALL 表示全表扫描（性能最差），type=ref 表示通过索引列引用查找（性能较好）。type 字段值从差到好排序为：ALL → index → range → ref → eq_ref → const。
+      </div>
+    </div>
+
+    <!-- ===== Multiple Choice Q2 ===== -->
+    <div class="quiz-item" id="quiz2">
+      <div class="question"><span class="qnum">Q2.</span>压力测试中 TPS 和 QPS 的区别是什么？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz2', this, true)">
+          <span class="letter">A</span> TPS 是每秒事务数，QPS 是每秒查询数
+        </div>
+        <div class="option" onclick="selectAnswer('quiz2', this, false)">
+          <span class="letter">B</span> TPS 是每秒查询数，QPS 是每秒事务数
+        </div>
+        <div class="option" onclick="selectAnswer('quiz2', this, false)">
+          <span class="letter">C</span> 两者完全相同
+        </div>
+        <div class="option" onclick="selectAnswer('quiz2', this, false)">
+          <span class="letter">D</span> TPS 只用于读操作，QPS 只用于写操作
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz2">
+        <div class="exp-label">✓ 解析：</div>
+        TPS（Transactions Per Second）是每秒事务数，一个事务可能包含多条 SQL。QPS（Queries Per Second）是每秒查询数，衡量单条 SQL 的执行频率。
+      </div>
+    </div>
+
+    <!-- ===== Multiple Choice Q3 ===== -->
+    <div class="quiz-item" id="quiz3">
+      <div class="question"><span class="qnum">Q3.</span>索引是越多越好吗？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz3', this, false)">
+          <span class="letter">A</span> 是的，索引越多查询越快
+        </div>
+        <div class="option" onclick="selectAnswer('quiz3', this, true)">
+          <span class="letter">B</span> 不是，索引会增加写入开销和存储空间，需要权衡
+        </div>
+        <div class="option" onclick="selectAnswer('quiz3', this, false)">
+          <span class="letter">C</span> 取决于表的大小，小表不需要索引
+        </div>
+        <div class="option" onclick="selectAnswer('quiz3', this, false)">
+          <span class="letter">D</span> 只有主键索引有用
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz3">
+        <div class="exp-label">✓ 解析：</div>
+        索引虽然可以加快查询速度，但会增加 INSERT / UPDATE / DELETE 的开销，占用额外存储空间。应在频繁查询的字段上创建索引，避免在频繁更新的字段上建过多索引。
+      </div>
+    </div>
+
+    <!-- ===== Multiple Choice Q4 ===== -->
+    <div class="quiz-item" id="quiz4">
+      <div class="question"><span class="qnum">Q4.</span>联合索引 (category_id, comments, views) 中，查询条件 <code>WHERE category_id=1 AND comments&gt;1 ORDER BY views DESC</code>，为什么 views 字段无法使用索引？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz4', this, false)">
+          <span class="letter">A</span> views 字段类型不匹配
+        </div>
+        <div class="option" onclick="selectAnswer('quiz4', this, true)">
+          <span class="letter">B</span> comments&gt;1 是范围查询，阻断了后续索引字段的使用
+        </div>
+        <div class="option" onclick="selectAnswer('quiz4', this, false)">
+          <span class="letter">C</span> ORDER BY 不能使用索引
+        </div>
+        <div class="option" onclick="selectAnswer('quiz4', this, false)">
+          <span class="letter">D</span> 联合索引最多只能使用前两个字段
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz4">
+        <div class="exp-label">✓ 解析：</div>
+        根据 B+Tree 索引的最左前缀原则，当 comments 使用范围查询（&gt;）时，其后的 views 字段无法再利用索引排序，导致 EXPLAIN 的 Extra 中出现 Using filesort。解决方案是去掉 comments，建立 (category_id, views) 联合索引。
+      </div>
+    </div>
+
+    <!-- ===== Multiple Choice Q5 ===== -->
+    <div class="quiz-item" id="quiz5">
+      <div class="question"><span class="qnum">Q5.</span>LEFT JOIN 优化时应该优先为哪个表建索引？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz5', this, false)">
+          <span class="letter">A</span> 左表
+        </div>
+        <div class="option" onclick="selectAnswer('quiz5', this, true)">
+          <span class="letter">B</span> 右表
+        </div>
+        <div class="option" onclick="selectAnswer('quiz5', this, false)">
+          <span class="letter">C</span> 两个表都建索引
+        </div>
+        <div class="option" onclick="selectAnswer('quiz5', this, false)">
+          <span class="letter">D</span> 行数少的表
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz5">
+        <div class="exp-label">✓ 解析：</div>
+        LEFT JOIN 条件用于确定如何从右表搜索行，左边一定都有数据，所以右表是优化的关键点，应该优先为右表建立索引。同理，RIGHT JOIN 优化左表。
+      </div>
+    </div>
+
+    <!-- ===== Multiple Choice Q6 ===== -->
+    <div class="quiz-item" id="quiz6">
+      <div class="question"><span class="qnum">Q6.</span>MySQL 默认的慢查询日志状态是？</div>
+      <div class="options">
+        <div class="option" onclick="selectAnswer('quiz6', this, false)">
+          <span class="letter">A</span> 开启，阈值 1 秒
+        </div>
+        <div class="option" onclick="selectAnswer('quiz6', this, false)">
+          <span class="letter">B</span> 开启，阈值 10 秒
+        </div>
+        <div class="option" onclick="selectAnswer('quiz6', this, true)">
+          <span class="letter">C</span> 关闭
+        </div>
+        <div class="option" onclick="selectAnswer('quiz6', this, false)">
+          <span class="letter">D</span> 开启，阈值 5 秒
+        </div>
+      </div>
+      <div class="explanation" id="explanation-quiz6">
+        <div class="exp-label">✓ 解析：</div>
+        MySQL 默认不启动慢查询日志，需要手动设置 <code>SET GLOBAL slow_query_log=ON</code> 来开启。默认的 long_query_time 阈值为 10 秒。
+      </div>
+    </div>
+
+    <!-- ===== Fill-in-the-blank F1 ===== -->
+    <div class="fill-item">
+      <div class="question"><span class="qnum">1.</span>请写出 EXPLAIN type 字段从差到好的排列顺序。</div>
+      <button class="toggle-answer" onclick="toggleFillAnswer(this)">
+        <span class="arrow">▶</span> 查看答案
+      </button>
+      <div class="answer-content">
+        <div class="answer-label">📝 答案：</div>
+        <p>ALL → index → range → ref → eq_ref → const → system</p>
+      </div>
+    </div>
+
+    <!-- ===== Fill-in-the-blank F2 ===== -->
+    <div class="fill-item">
+      <div class="question"><span class="qnum">2.</span>如果 Created_tmp_disk_tables / Created_tmp_tables 的比例为 98%，说明什么问题？应该如何解决？</div>
+      <button class="toggle-answer" onclick="toggleFillAnswer(this)">
+        <span class="arrow">▶</span> 查看答案
+      </button>
+      <div class="answer-content">
+        <div class="answer-label">📝 答案：</div>
+        <p>说明临时表大小经常超过 tmp_table_size，大部分临时表被创建到磁盘上，影响 SQL 执行效率。应该适当增加 tmp_table_size 参数的值，使该比例降到 25% 以下。</p>
+      </div>
+    </div>
+
+    <!-- ===== Fill-in-the-blank F3 ===== -->
+    <div class="fill-item">
+      <div class="question"><span class="qnum">3.</span>描述使用 Sysbench 进行压力测试的三个阶段及其作用。</div>
+      <button class="toggle-answer" onclick="toggleFillAnswer(this)">
+        <span class="arrow">▶</span> 查看答案
+      </button>
+      <div class="answer-content">
+        <div class="answer-label">📝 答案：</div>
+        <p>
+          <strong>prepare 阶段</strong>：准备测试数据，创建指定数量和大小的表；<br>
+          <strong>run 阶段</strong>：执行压力测试，模拟并发读写操作，记录 TPS / QPS / 延迟等指标；<br>
+          <strong>cleanup 阶段</strong>：清理测试数据，删除之前创建的表。
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== SECTION 5: 学习建议 ==================== -->
+  <div class="section-title">
+    <span class="icon">💡</span> 学习建议
+  </div>
+
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">🔬</div>
+      <h4>理论结合实践</h4>
+      <p>每个任务都要动手操作，纸上得来终觉浅。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📊</div>
+      <h4>多次对比测试</h4>
+      <p>压测和 EXPLAIN 分析都需要多组数据对比，改变一个变量观察结果变化。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">👁️</div>
+      <h4>养成监控习惯</h4>
+      <p>运维不是一次性的，需要持续关注系统运行状态。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🛠️</div>
+      <h4>善用工具</h4>
+      <p>MONyog 可视化监控 + mysqldumpslow 日志分析，事半功倍。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📓</div>
+      <h4>记录与总结</h4>
+      <p>每次优化前后记录数据，形成优化报告，积累实战经验。</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="chapter6-guide.html">📖 指导书</a>
+    <a href="chapter6-manual.html">📋 操作手册</a>
+    <a href="chapter6-mindmap.html">🗺️ 知识结构图</a>
+    <a href="chapter6-summary.html">📝 小结自测</a>
+  </div>
+  <div class="credit">
+    返回课程网站：
+    <a href="https://shiyingyz.github.io/courses/db/#chapter6" target="_blank" rel="noopener">https://shiyingyz.github.io/courses/db/#chapter6</a>
+  </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+  // Multiple choice answer selection
+  function selectAnswer(quizId, el, isCorrect) {
+    var container = document.getElementById(quizId);
+    if (container.classList.contains('answered')) return;
+
+    // Lock the quiz
+    container.classList.add('answered');
+
+    // Highlight all options as locked
+    var allOptions = container.querySelectorAll('.option');
+    allOptions.forEach(function(opt) {
+      opt.classList.add('locked');
+    });
+
+    // Highlight the clicked option
+    if (isCorrect) {
+      el.classList.add('correct');
+    } else {
+      el.classList.add('wrong');
+      // Also highlight the correct answer
+      allOptions.forEach(function(opt) {
+        if (opt.getAttribute('onclick') && opt.getAttribute('onclick').indexOf(', true)') > -1) {
+          opt.classList.add('correct');
+        }
+      });
+    }
+
+    // Show explanation
+    var exp = document.getElementById('explanation-' + quizId);
+    if (exp) {
+      if (isCorrect) {
+        exp.className = 'explanation correct-expl show';
+      } else {
+        exp.className = 'explanation wrong-expl show';
+      }
+    }
+  }
+
+  // Toggle fill-in-the-blank answer
+  function toggleFillAnswer(btn) {
+    var content = btn.nextElementSibling;
+    var isOpen = content.classList.contains('show');
+
+    if (isOpen) {
+      content.classList.remove('show');
+      btn.classList.remove('open');
+      btn.innerHTML = '<span class="arrow">▶</span> 查看答案';
+    } else {
+      content.classList.add('show');
+      btn.classList.add('open');
+      btn.innerHTML = '<span class="arrow">▼</span> 收起答案';
+    }
+  }
+</script>
+
+</body>
+</html>
